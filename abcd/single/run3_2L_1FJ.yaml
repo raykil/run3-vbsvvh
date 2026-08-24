@@ -1,6 +1,6 @@
-sig_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
-bkg_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
-data_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
+# HWW
+
+base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r3_2lep_1FJ_20260615211529_2lep_1FJ/"
 
 training_features:
   - lepton_pt: log
@@ -16,31 +16,38 @@ training_features:
   - fatjet_tau2: none
   - fatjet_tau1: none
 
+split_features: ["lepton_"]
+
+derived_vars: {}
+auto_include_derived_vars: false
+auto_include_derived_vars_transform: none
 
 extra_vars:
   - weight
+  # - boosted_h_candidate_score
+  # - boosted_v_candidate_score
   - fatjet_globalParT3_Xbb
   - fatjet_globalParT3_QCD
+  - vbs_detajj
 
 constraint_var: "vbs_score"
 
+# preselection: "(boosted_h_candidate_score >= 0.1) & (boosted_v_candidate_score >= 0.1)"
 preselection: "((fatjet_globalParT3_Xbb/(fatjet_globalParT3_Xbb+fatjet_globalParT3_QCD)) >= 0.1)"
 
 learning_rate: 0.0001
-batch_size: 4096
+batch_size: 2048
 n_epochs: 1000
 
 architecture: [64, 32, 16]
 bce_weight: 1.0
-disco_lambda: 10.0
+disco_lambda: 5.0
 
-closure_n_events_min: 10
-closure_symmetrize: true
 use_batchnorm: true
 dropout: 0.2
 weight_decay: 0.01
 label_smoothing: 0.0
 
-devices: [0]
+devices: [1]
 
-output: "1FJ_2L_RUN2"
+output: "run3_2L_1FJ"

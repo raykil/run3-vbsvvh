@@ -1,0 +1,53 @@
+# HWZ / HZZ
+
+base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r3_2lep_2FJ_20260615211951_2lep_2FJ/"
+
+training_features:
+  - lepton_pt: log
+  - lepton_eta: minmax
+  - lepton_phi: minmax
+  - lepton_mass: log
+  - met_pt: log
+  - met_phi: minmax
+  - fatjet_pt: log
+  - fatjet_eta: minmax
+  - fatjet_phi: minmax
+  - fatjet_mass: log
+  - fatjet_msoftdrop: log # only in 2FJ maybe
+  - fatjet_tau1: none
+  - fatjet_tau2: none
+  - ht_fatjets: log # only in 2FJ good
+
+split_features: ["lepton_", "fatjet_"]
+
+derived_vars: {}
+# auto_include_derived_vars: false
+# auto_include_derived_vars_transform: none
+
+extra_vars:
+  - weight
+  - fatjet_globalParT3_Xbb
+  - fatjet_globalParT3_QCD
+
+constraint_var: "vbs_score"
+
+preselection: "((fatjet_globalParT3_Xbb_1/(fatjet_globalParT3_Xbb_1+fatjet_globalParT3_QCD_1)) >= 0.1) | ((fatjet_globalParT3_Xbb_2/(fatjet_globalParT3_Xbb_2+fatjet_globalParT3_QCD_2)) >= 0.1)"
+
+learning_rate: 0.0001
+batch_size: 4096
+n_epochs: 1000
+
+architecture: [64, 32, 16]
+bce_weight: 1.0
+disco_lambda: 10.0
+
+closure_n_events_min: 10
+closure_symmetrize: true
+use_batchnorm: true
+dropout: 0.2
+weight_decay: 0.01
+label_smoothing: 0.0
+
+devices: [0]
+
+output: "run3_2L_2FJ"

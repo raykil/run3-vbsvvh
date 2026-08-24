@@ -1,6 +1,6 @@
-sig_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r2_2lep_2FJ_20260615211710_2lep_2FJ"
-bkg_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r2_2lep_2FJ_20260615211710_2lep_2FJ
-data_base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r2_2lep_2FJ_20260615211710_2lep_2FJ
+# HWW
+
+base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
 
 training_features:
   - lepton_pt: log
@@ -16,6 +16,9 @@ training_features:
   - fatjet_tau2: none
   - fatjet_tau1: none
 
+split_features: ["lepton_"]
+
+derived_vars: {}
 
 extra_vars:
   - weight
@@ -24,7 +27,7 @@ extra_vars:
 
 constraint_var: "vbs_score"
 
-preselection: "((fatjet_globalParT3_Xbb/(fatjet_globalParT3_Xbb+fatjet_globalParT3_QCD)) >= 0.1)"
+preselection: "((fatjet_globalParT3_Xbb/(fatjet_globalParT3_Xbb+fatjet_globalParT3_QCD)) >= 0.1)" # Hbb tag score, need to work on optimal cut
 
 learning_rate: 0.0001
 batch_size: 4096
@@ -43,4 +46,4 @@ label_smoothing: 0.0
 
 devices: [0]
 
-output: "1FJ_2L_RUN2"
+output: "run2_2L_1FJ"
