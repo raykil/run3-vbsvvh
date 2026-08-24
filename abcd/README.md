@@ -78,3 +78,15 @@ To run inference on data after training
 ```bash
 python3 main.py --config single/config_boosted_run3.yaml --flavor single --infer --checkpoint <path> --data
 ```
+
+## How to run Training.ipynb
+1. Turn on ND vpn (Cisco secure client).
+2. Open https://camlnd.crc.nd.edu:9800 on a browser.
+3. Select these options, and spawn a GPU server:
+	- nGPU = 1
+	- nCPU = 4
+	- Memory = 8GB
+	- Runtime = 240 min
+	- Container = pyTortch2.5
+	- Use A100 GPU node = True
+4. Run the notebook

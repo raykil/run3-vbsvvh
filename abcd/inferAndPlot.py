@@ -1,9 +1,12 @@
+import argparse
+from pathlib import Path
+
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import roc_curve, roc_auc_score, auc
-from abcd_model import *
+from TrainingTools import *
 
 def plot_validation_roc(model, val_loader, device="cpu", output_path="roc.png"):
     model.to(device)
@@ -52,6 +55,7 @@ def plot_validation_roc(model, val_loader, device="cpu", output_path="roc.png"):
     print(f"Saved ROC curve to {output_path}")
 
     return roc_auc
+
 def plot_score_densities(
     model,
     data_loader,
@@ -236,8 +240,22 @@ def plot_score_densities(
         plt.close()
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run", type=int, choices=[2, 3], required=True)
+    parser.add_argument("--nFJ", type=int, choices=[1, 2], required=True)
+    args = parser.parse_args()
+
+    base = Path(__file__).resolve().parent
+    tag = f"run{args.run}_2L_{args.nFJ}FJ"
+    plot_dir = base / "plots" / tag
+    plot_dir.mkdir(parents=True, exist_ok=True)
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    val_dataset = torch.load(base / "dataset" / f"{tag}_validation.pt", map_location="cpu", weights_only=False)
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=4096, shuffle=False, pin_memory=(device == "cuda"), num_workers=4)
+
     model = ABCDModel(
-        input_size=16,
+        input_size=val_dataset[0][0].shape[0],
         hidden_layers=[64, 32, 16],
         learning_rate=0.001,
         bce_weight=1.0,
@@ -252,26 +270,22 @@ def main():
         lr_scheduler_factor=0.5,
         lr_scheduler_min_lr=1e-6,
     )
-    state_dict = torch.load("best_model.pt", map_location="cpu")
-    model.load_state_dict(state_dict)
-    val_dataset = torch.load("validationDataset.pt", map_location="cpu", weights_only=False,)
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=4096, shuffle=False, pin_memory=True, num_workers=4)
-    
+    model.load_state_dict(torch.load(base / "models" / f"{tag}_best_model.pt", map_location="cpu"))
+
     plot_validation_roc(
         model,
         val_loader,
-        device="cpu",
-        output_path="plots/roc.png",
+        device=device,
+        output_path=plot_dir / "roc.png",
     )
 
     plot_score_densities(
-    model,
-    val_loader,
-    device="cpu",
-    output_path="plots/",
-    normalize=True
+        model,
+        val_loader,
+        device=device,
+        output_path=plot_dir,
+        normalize=True,
     )
-
 
 if __name__ == "__main__":
     main()

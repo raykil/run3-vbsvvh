@@ -1,11 +1,4 @@
-import glob
-import logging
-import os
-import re
-import sys
-import csv
-import yaml
-import json
+import os, sys, re, csv, yaml, json, glob, logging, warnings
 from XRootD import client
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from argparse import ArgumentParser
@@ -25,7 +18,7 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from dataloader import get_dataloader
+from TrainingTools import get_dataloader
 from model import ABCDLightningModule
 
 MISSING_VALUE = -999.0
@@ -33,13 +26,15 @@ MISSING_VALUE = -999.0
 def load_config(config_path):
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-def paths_from_json(json_filename, base_path, kind="sig"):
-    with open(json_filename, "r") as f:
+
+def paths_from_json(jsonpath, base_path, kind="sig"):
+    with open(jsonpath, "r") as f:
         data = json.load(f)
         paths = []
         for entry in data["samples"]:
             if(str(data["samples"][entry]["metadata"]["kind"]) == kind):
                 if kind == "sig" and "c2v1p5" in str(data["samples"][entry]["metadata"]["shortname"]):
+                    # only using c2v1p5, and not c2v1p0? Okay.
                     paths.append(base_path+entry+'/')
                 elif kind != "sig":
                     paths.append(base_path+entry+'/')
@@ -48,15 +43,23 @@ def paths_from_json(json_filename, base_path, kind="sig"):
             prefix, server, remote_path = path.split("//", 2)
             server = prefix+'//'+server
             xrdfs = client.FileSystem(server)
-            status, listing = xrdfs.dirlist("/" + remote_path)
+            status, listing = xrdfs.dirlist("/" + remote_path, client.flags.DirListFlags.STAT)
             if status.ok:
                 for entry in listing:
-                    if entry.name.endswith(".root"):
-                        full_path = os.path.join(path, entry.name)
-                        files.append(full_path)
-
-        print(files)
+                    if not entry.name.endswith(".root"):
+                        continue
+                    if entry.statinfo is not None and entry.statinfo.size == 0:
+                        logging.warning("Skipping empty file %s", path + entry.name)
+                        continue
+                    files.append(os.path.join(path, entry.name))
+        if len(files)>0 and files[0].endswith('.root'): logging.info(f"{kind} files successfully loaded!")
     return files
+
+# def paths_from_json(jsonpath, base_path, kind='sig'):
+#     with open(jsonpath, 'r') as f:
+#         data = json.load(f)
+
+
 def resolve_paths(base, paths):
     if isinstance(paths, str):
         paths = [paths]
@@ -70,15 +73,14 @@ def resolve_paths(base, paths):
             resolved.append(full)
     return resolved
 
-def parse_training_features(training_features_cfg):
+def parse_training_features(training_features_cfg, split_prefixes):
     training_features = []
     feature_transforms = {}
-
     for feat in training_features_cfg:
         if isinstance(feat, dict):
             for name, tf in feat.items():
                 training_features.append(name)
-                if "lepton" in name:
+                if name.startswith(split_prefixes):
                     feature_transforms[name + "_1"] = tf
                     feature_transforms[name + "_2"] = tf 
                 else:
@@ -86,7 +88,6 @@ def parse_training_features(training_features_cfg):
         else:
             training_features.append(feat)
             feature_transforms[feat] = "none"
-
     return training_features, feature_transforms
 
 
@@ -163,7 +164,7 @@ def apply_derived_vars(data, derived_vars_cfg):
 
     return out
 
-def _read_root_frame(path, branches, dataset_idx, sample_idx):
+def _read_root_frame(path, branches, dataset_idx, sample_idx, split_branches):
     with uproot.open(path) as root_file:
         arrays = root_file["Events"].arrays(branches, library="np")
 
@@ -174,7 +175,7 @@ def _read_root_frame(path, branches, dataset_idx, sample_idx):
             continue
 
         values = np.asarray(arrays[branch])
-        if branch.startswith("lepton_"):
+        if branch in split_branches:
             values = np.asarray(values, dtype=object)
             columns[branch + "_1"] = np.array([v[0] if len(v) > 0 else MISSING_VALUE for v in values])
             columns[branch + "_2"] = np.array([v[1] if len(v) > 1 else MISSING_VALUE for v in values])
@@ -254,8 +255,9 @@ def _safe_minmax_scale(values, valid_mask):
     return scaled
 
 
-def load_data(paths, features, extra_vars, num_workers=1):
+def load_data(paths, features, extra_vars, num_workers, split_prefixes):
     branches = list(dict.fromkeys(features + extra_vars))
+    split_branches = {b for b in features+extra_vars if b.startswith(split_prefixes)}
 
     sample_names = []
     for path in paths:
@@ -274,7 +276,7 @@ def load_data(paths, features, extra_vars, num_workers=1):
         max_workers = min(num_workers, len(indexed_paths))
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             futures = {
-                pool.submit(_read_root_frame, path, branches, dataset_idx, sample_idx): dataset_idx
+                pool.submit(_read_root_frame, path, branches, dataset_idx, sample_idx, split_branches): dataset_idx
                 for dataset_idx, path, sample_idx in indexed_paths
             }
             for future in tqdm(as_completed(futures), total=len(futures), desc="Loading ROOT files"):
@@ -282,15 +284,14 @@ def load_data(paths, features, extra_vars, num_workers=1):
                 chunks[dataset_idx] = future.result()
     else:
         for dataset_idx, path, sample_idx in tqdm(indexed_paths, total=len(indexed_paths), desc="Loading ROOT files"):
-            chunks[dataset_idx] = _read_root_frame(path, branches, dataset_idx, sample_idx)
+            chunks[dataset_idx] = _read_root_frame(path, branches, dataset_idx, sample_idx, split_branches)
 
     chunks = [chunk for chunk in chunks if chunk is not None]
 
     data = _concat_chunks(chunks)
-    logging.info("Loaded %d events from %d files.", _data_length(data), len(paths))
+    logging.info(f"Loaded {_data_length(data)} events from {len(paths)} files.")
     if "weight" in data:
         data = _apply_mask(data, np.asarray(data["weight"]) > 0)
-
     return data
 
 def feature_length(data, feature):
@@ -308,9 +309,6 @@ def preprocess_data(data, training_features, feature_transforms, constraint_var)
     out = {k: np.asarray(v).copy() for k, v in data.items()}
     cols_to_clean = list(dict.fromkeys(training_features + [constraint_var]))
     present_cols = [col for col in cols_to_clean if col in out]
-    print(data.keys(), training_features)
-    for feat in training_features:
-         print(feat, feature_length(data, feat))
     for col in present_cols:
         arr = np.asarray(out[col])
         if arr.dtype == object:
@@ -321,6 +319,7 @@ def preprocess_data(data, training_features, feature_transforms, constraint_var)
         out[col] = np.nan_to_num(arr, nan=MISSING_VALUE, posinf=MISSING_VALUE, neginf=MISSING_VALUE)
 
     for feat in training_features:
+        # transform log = log + minmax. Result is [0,1].
         feat_arr = np.asarray(out[feat], dtype=np.float64)
         valid = (feat_arr != MISSING_VALUE) & np.isfinite(feat_arr)
         transform = feature_transforms.get(feat, "none")
@@ -328,10 +327,8 @@ def preprocess_data(data, training_features, feature_transforms, constraint_var)
             positive = valid & (feat_arr > 0)
             feat_arr[valid & ~positive] = MISSING_VALUE
             valid = positive
-
-        if transform == "log":
             feat_arr[valid] = np.log(feat_arr[valid])
-        print(feat,transform)
+        # print(feat,transform)
         out[feat] = _safe_minmax_scale(feat_arr, valid)
 
     if constraint_var not in training_features:
@@ -379,6 +376,7 @@ def make_dataloaders(data, training_features, constraint_var, batch_size):
         stratify=stratify_key,
     )
 
+    logging.info(f"Feature column order: {dict(enumerate(training_features))}")
     feature_matrix = np.column_stack([data[f] for f in training_features]).astype(np.float32, copy=False)
     constraint_values = np.asarray(data[constraint_var], dtype=np.float32).reshape(-1, 1)
     labels = np.asarray(data["label"], dtype=np.float32)
@@ -740,32 +738,34 @@ def run_inference(args, cfg, flavor, sig_data, bkg_data, training_features, feat
 
 
 def main():
+    # example command: python3 main.py --config single/config_boosted_run2.yaml --flavor single --json_filename samples.json -> from Reyer
     parser = ArgumentParser()
-    parser.add_argument("--config", required=True, help="Path to YAML config")
-    parser.add_argument("--json_filename", required=True, help="Path to sample json")
-    parser.add_argument("--flavor", choices=["single", "double"], default=None, help="Training flavor: single (one output) or double (two outputs)")
-    parser.add_argument("--data", action="store_true", help="Run inference data (without training) using the latest checkpoint from config")
-    parser.add_argument("--infer", action="store_true", help="Skip training and run inference only")
-    parser.add_argument("--checkpoint", default=None, help="Path to model checkpoint (.ckpt) for inference. If omitted, auto-picks newest checkpoint.")
-    parser.add_argument("--output-csv", default=None, help="Output CSV path")
+    parser.add_argument('-c', "--config"    , required=True         , help="Path to YAML config")
+    parser.add_argument('-j', "--jsonpath"  , default="samples.json", help="Path to sample json")
+    parser.add_argument('-f', "--flavor"    , default="single"      , choices=["single", "double"], help="Training flavor: single (one output) or double (two outputs). Later prob should put this in config.")
+    parser.add_argument('-d', "--data"      , action="store_true"   , help="Run inference data (without training) using the latest checkpoint from config")
+    parser.add_argument('-i', "--infer"     , action="store_true"   , help="Skip training and run inference only")
+    parser.add_argument('-p', "--checkpoint", default=None          , help="Path to model checkpoint (.ckpt) for inference. If omitted, auto-picks newest checkpoint.")
+    parser.add_argument('-o', "--output-csv", default=None          , help="Output CSV path")
     args = parser.parse_args()
 
+    # —————————— Load config ————————————————————————————————————————————————————————————
+    warnings.filterwarnings("ignore", message=".*reduce_op.*")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config(args.config)
-    flavor = args.flavor if args.flavor is not None else cfg.get("flavor", "single")
-    logging.info("Using flavor=%s", flavor)
+    logging.info("Using flavor=%s", args.flavor)
 
-    training_features, feature_transforms = parse_training_features(cfg["training_features"])
-    constraint_var = cfg["constraint_var"]
-    derived_vars_cfg = _normalize_derived_vars_cfg(cfg.get("derived_vars", {}))
-    if flavor == "double" and constraint_var not in training_features:
+
+    split_prefixes = tuple(cfg["split_features"]) # branches expanded into _1/_2 per object
+    training_features, feature_transforms = parse_training_features(cfg["training_features"], split_prefixes)
+    constraint_var = cfg["constraint_var"] # second axis in ABCD
+    
+    # —————————— Something about derived vars ———————————————————————————————————————————
+    derived_vars_cfg = _normalize_derived_vars_cfg(cfg.get("derived_vars", {})) # None of current yaml have derived vars
+    if args.flavor == "double" and constraint_var not in training_features:
         training_features.append(constraint_var)
         feature_transforms[constraint_var] = cfg.get("constraint_as_feature_transform", "none")
-        logging.info(
-            "Double flavor: added constraint_var '%s' to training features as regular input",
-            constraint_var,
-        )
-
+        logging.info("Double flavor: added constraint_var '%s' to training features as regular input", constraint_var)
     if cfg.get("auto_include_derived_vars", False):
         auto_tf = cfg.get("auto_include_derived_vars_transform", "none")
         added_count = 0
@@ -780,36 +780,37 @@ def main():
             added_count,
             auto_tf,
         )
-
     derived_var_names = set(derived_vars_cfg.keys())
     derived_input_vars = _collect_derived_input_vars(derived_vars_cfg)
 
+    # —————————— Loading features from yaml ———————————————————————————————————————————
     load_training_features = [f for f in training_features if f not in derived_var_names]
-    load_constraint = [] if constraint_var in derived_var_names else [constraint_var]
-    load_features = list(dict.fromkeys(load_training_features + load_constraint + derived_input_vars))
-    extra_vars = cfg.get("extra_vars", [])
+    load_constraint = [] if constraint_var in derived_var_names else [constraint_var] # vbs_score
+    load_features = list(dict.fromkeys(load_training_features + load_constraint + derived_input_vars)) # training_features + constraint_var in yaml
+    extra_vars = cfg.get("extra_vars", []) # extra_vars in yaml
     if "weight" not in extra_vars:
         extra_vars.append("weight")
 
-    sig_paths = paths_from_json(args.json_filename, cfg.get("sig_base_path"), "sig")
-    bkg_paths = paths_from_json(args.json_filename, cfg.get("bkg_base_path"), "bkg")
-#    print(sig_paths)
-#    sig_paths = resolve_paths("*.root", sig_base)    
-#   bkg_paths = resolve_paths("*.root", bkg_base)
+    # —————————— Loading samples ———————————————————————————————————————————
     io_workers = int(cfg.get("io_workers", min(2, os.cpu_count() or 1)))
     logging.info("Using io_workers=%d for ROOT loading", io_workers)
+    sig_paths = paths_from_json(args.jsonpath, cfg["base_path"], "sig")
+    bkg_paths = paths_from_json(args.jsonpath, cfg["base_path"], "bkg")
+    sig_data = load_data(sig_paths, load_features, extra_vars, io_workers, split_prefixes)
+    bkg_data = load_data(bkg_paths, load_features, extra_vars, io_workers, split_prefixes)
 
+    # —————————— Something about data... ———————————————————————————————————————————
     if args.data:
         if not args.infer:
             parser.error("--data can only be used with --infer")
         
-        data_base = paths_from_json(args.json_filename, cfg.get("data_base_path"), "data")
+        data_base = paths_from_json(args.jsonpath, cfg["base_path"], "data")
         if "data_path" not in cfg:
             parser.error("Config must contain 'data_path' when using --data")
 
         data_paths = resolve_paths("*.root", data_base)
         logging.info("Loading real data...")
-        real_data = load_data(data_paths, load_features, extra_vars, num_workers=io_workers)
+        real_data = load_data(data_paths, load_features, extra_vars, io_workers, split_prefixes)
         
         logging.info("Data samples: %d", _data_length(real_data))
         if cfg.get("preselection"):
@@ -821,25 +822,18 @@ def main():
         )
 
         logging.info("Skipping training. Running inference on data only...")
-        run_inference(args, cfg, flavor, None, None, training_features, feature_transforms, constraint_var, derived_vars_cfg, is_data=True, inference_data=real_data)
+        run_inference(args, cfg, args.flavor, None, None, training_features, feature_transforms, constraint_var, derived_vars_cfg, is_data=True, inference_data=real_data)
         return
 
-    logging.info("Loading signal data...")
-    sig_data = load_data(sig_paths, load_features, extra_vars, num_workers=io_workers)
-    logging.info("Loading background data...")
-    bkg_data = load_data(bkg_paths, load_features, extra_vars, num_workers=io_workers)
 
-    logging.info("Signal samples: %d, Background samples: %d", _data_length(sig_data), _data_length(bkg_data))
+    # —————————— Preselection cut ———————————————————————————————————————————
+    logging.info(f"Before preselection - Signal samples: {_data_length(sig_data)}, Background samples: {_data_length(bkg_data)}")
     if cfg.get("preselection"):
         sig_mask = _evaluate_preselection_mask(sig_data, cfg["preselection"])
         bkg_mask = _evaluate_preselection_mask(bkg_data, cfg["preselection"])
         sig_data = _apply_mask(sig_data, sig_mask)
         bkg_data = _apply_mask(bkg_data, bkg_mask)
-    logging.info(
-        "After preselection - Signal samples: %d, Background samples: %d",
-        _data_length(sig_data),
-        _data_length(bkg_data),
-    )
+    logging.info(f"After preselection - Signal samples: {_data_length(sig_data)}, Background samples: {_data_length(bkg_data)}")
 
     sig_data["label"] = np.ones(_data_length(sig_data), dtype=np.float32)
     bkg_data["label"] = np.zeros(_data_length(bkg_data), dtype=np.float32)
@@ -858,18 +852,15 @@ def main():
     }
     data = apply_derived_vars(data, derived_vars_cfg)
     old_list = training_features.copy()
-    print(training_features)
     for f in old_list:
-        if "lepton" in f:
+        if f.startswith(split_prefixes):
             ix = training_features.index(f)
             training_features[ix : ix + 1] = [f.replace(f, f+"_1"), f.replace(f, f+"_2")]
-    print(training_features)
     data = preprocess_data(data, training_features, feature_transforms, constraint_var)
-    print(data.keys())
 
     if args.infer:
         logging.info("Skipping training. Running inference only...")
-        run_inference(args, cfg, flavor, raw_sig_data, raw_bkg_data, training_features, feature_transforms, constraint_var, derived_vars_cfg)
+        run_inference(args, cfg, args.flavor, raw_sig_data, raw_bkg_data, training_features, feature_transforms, constraint_var, derived_vars_cfg)
         return
 
     logging.info("Creating data loaders...")
@@ -879,17 +870,20 @@ def main():
         constraint_var=constraint_var,
         batch_size=cfg.get("batch_size", 4096),
     )
-    
-    torch.save(train_loader.dataset, "trainingDataset.pt")
-    torch.save(val_loader.dataset, "validationDataset.pt")
     sys.exit()
+    
+    os.makedirs("dataset", exist_ok=True)
+    torch.save(train_loader.dataset, f"dataset/{Path(args.config).stem}_training.pt")
+    torch.save(val_loader.dataset, f"dataset/{Path(args.config).stem}_validation.pt")
+    sys.exit()
+    
     lightning_model = ABCDLightningModule(
         input_size=len(training_features),
         hidden_layers=cfg.get("architecture", [64, 32, 16]),
         learning_rate=cfg.get("learning_rate", 1e-3),
         bce_weight=cfg.get("bce_weight", 1.0),
         disco_lambda=cfg.get("disco_lambda", 0.0),
-        flavor=flavor,
+        flavor=args.flavor,
         use_batchnorm=cfg.get("use_batchnorm", True),
         dropout=cfg.get("dropout", 0.0),
         weight_decay=cfg.get("weight_decay", 1e-2),
@@ -908,7 +902,7 @@ def main():
         val_loader=val_loader,
         output_dir=output_dir,
         max_epochs=cfg.get("n_epochs", 100),
-        flavor=flavor,
+        flavor=args.flavor,
         devices=cfg.get("devices", [0]),
         check_val_every_n_epoch=cfg.get("check_val_every_n_epoch", 1),
         early_stopping_patience=cfg.get("early_stopping_patience", 40),
@@ -918,7 +912,7 @@ def main():
     logging.info("Training finished.")
 
     logging.info("Running inference...")
-    run_inference(args, cfg, flavor, raw_sig_data, raw_bkg_data, training_features, feature_transforms, constraint_var, derived_vars_cfg)
+    run_inference(args, cfg, args.flavor, raw_sig_data, raw_bkg_data, training_features, feature_transforms, constraint_var, derived_vars_cfg)
     logging.info("Inference finished.")
 
 if __name__ == "__main__":
