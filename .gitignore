@@ -1,5 +1,6 @@
 validation/
 **/*archive*/
+**/*working*
 
 .vscode/
 .DS_Store
