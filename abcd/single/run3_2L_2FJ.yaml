@@ -1,5 +1,6 @@
 # HWZ / HZZ
 
+sample_json: "single/samples_run3_2L_2FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r3_2lep_2FJ_20260615211951_2lep_2FJ/"
 
 training_features:

@@ -98,6 +98,7 @@ def _extract_expression_variables(expression):
 
 
 def _normalize_derived_vars_cfg(derived_vars_cfg):
+    # just ensuring derived vars is a dict.
     if derived_vars_cfg is None:
         return {}
     if isinstance(derived_vars_cfg, dict):
@@ -114,8 +115,6 @@ def _normalize_derived_vars_cfg(derived_vars_cfg):
 
 
 def _collect_derived_input_vars(derived_vars_cfg):
-    derived_vars_cfg = _normalize_derived_vars_cfg(derived_vars_cfg)
-
     derived_names = set(derived_vars_cfg.keys())
     needed = []
     for expr in derived_vars_cfg.values():
@@ -124,7 +123,7 @@ def _collect_derived_input_vars(derived_vars_cfg):
         for var in _extract_expression_variables(expr):
             if var not in derived_names:
                 needed.append(var)
-    return list(dict.fromkeys(needed))
+    return derived_names, list(dict.fromkeys(needed))
 
 
 def apply_derived_vars(data, derived_vars_cfg):
@@ -738,35 +737,35 @@ def run_inference(args, cfg, flavor, sig_data, bkg_data, training_features, feat
 
 
 def main():
-    # example command: python3 main.py --config single/config_boosted_run2.yaml --flavor single --json_filename samples.json -> from Reyer
+    # example command: python3 main.py --config single/run2_2L_1FJ.yaml --flavor single
     parser = ArgumentParser()
     parser.add_argument('-c', "--config"    , required=True         , help="Path to YAML config")
-    parser.add_argument('-j', "--jsonpath"  , default="samples.json", help="Path to sample json")
     parser.add_argument('-f', "--flavor"    , default="single"      , choices=["single", "double"], help="Training flavor: single (one output) or double (two outputs). Later prob should put this in config.")
     parser.add_argument('-d', "--data"      , action="store_true"   , help="Run inference data (without training) using the latest checkpoint from config")
     parser.add_argument('-i', "--infer"     , action="store_true"   , help="Skip training and run inference only")
     parser.add_argument('-p', "--checkpoint", default=None          , help="Path to model checkpoint (.ckpt) for inference. If omitted, auto-picks newest checkpoint.")
-    parser.add_argument('-o', "--output-csv", default=None          , help="Output CSV path")
+    parser.add_argument('-o', "--output_csv", default=None          , help="Output CSV path")
     args = parser.parse_args()
 
     # —————————— Load config ————————————————————————————————————————————————————————————
     warnings.filterwarnings("ignore", message=".*reduce_op.*")
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(message)s") # format="%(asctime)s %(levelname)s %(message)s"
     cfg = load_config(args.config)
     logging.info("Using flavor=%s", args.flavor)
 
-
     split_prefixes = tuple(cfg["split_features"]) # branches expanded into _1/_2 per object
-    training_features, feature_transforms = parse_training_features(cfg["training_features"], split_prefixes)
+    training_features, feature_transforms = parse_training_features(cfg["training_features"], split_prefixes) # cfg["training_features"]: list of dicts, feature_transforms: dict
     constraint_var = cfg["constraint_var"] # second axis in ABCD
     
     # —————————— Something about derived vars ———————————————————————————————————————————
-    derived_vars_cfg = _normalize_derived_vars_cfg(cfg.get("derived_vars", {})) # None of current yaml have derived vars
+    derived_vars_cfg = _normalize_derived_vars_cfg(cfg.get("derived_vars", {}))
+
     if args.flavor == "double" and constraint_var not in training_features:
         training_features.append(constraint_var)
         feature_transforms[constraint_var] = cfg.get("constraint_as_feature_transform", "none")
         logging.info("Double flavor: added constraint_var '%s' to training features as regular input", constraint_var)
-    if cfg.get("auto_include_derived_vars", False):
+
+    if cfg.get("auto_include_derived_vars", False): # not touching here
         auto_tf = cfg.get("auto_include_derived_vars_transform", "none")
         added_count = 0
         for derived_name in derived_vars_cfg.keys():
@@ -775,27 +774,25 @@ def main():
             training_features.append(derived_name)
             feature_transforms[derived_name] = auto_tf
             added_count += 1
-        logging.info(
-            "Auto-include derived vars enabled: added %d derived features with transform='%s'",
-            added_count,
-            auto_tf,
-        )
-    derived_var_names = set(derived_vars_cfg.keys())
-    derived_input_vars = _collect_derived_input_vars(derived_vars_cfg)
+        logging.info(f"Auto-include derived vars enabled: added {added_count} derived features with transform='{auto_tf}'")
+
+    derived_var_names, derived_input_vars = _collect_derived_input_vars(derived_vars_cfg)
 
     # —————————— Loading features from yaml ———————————————————————————————————————————
     load_training_features = [f for f in training_features if f not in derived_var_names]
     load_constraint = [] if constraint_var in derived_var_names else [constraint_var] # vbs_score
     load_features = list(dict.fromkeys(load_training_features + load_constraint + derived_input_vars)) # training_features + constraint_var in yaml
     extra_vars = cfg.get("extra_vars", []) # extra_vars in yaml
+    print("load_features", load_features)
     if "weight" not in extra_vars:
         extra_vars.append("weight")
+    sys.exit()
 
     # —————————— Loading samples ———————————————————————————————————————————
     io_workers = int(cfg.get("io_workers", min(2, os.cpu_count() or 1)))
     logging.info("Using io_workers=%d for ROOT loading", io_workers)
-    sig_paths = paths_from_json(args.jsonpath, cfg["base_path"], "sig")
-    bkg_paths = paths_from_json(args.jsonpath, cfg["base_path"], "bkg")
+    sig_paths = paths_from_json(cfg["sample_json"], cfg["base_path"], "sig")
+    bkg_paths = paths_from_json(cfg["sample_json"], cfg["base_path"], "bkg")
     sig_data = load_data(sig_paths, load_features, extra_vars, io_workers, split_prefixes)
     bkg_data = load_data(bkg_paths, load_features, extra_vars, io_workers, split_prefixes)
 
@@ -804,7 +801,7 @@ def main():
         if not args.infer:
             parser.error("--data can only be used with --infer")
         
-        data_base = paths_from_json(args.jsonpath, cfg["base_path"], "data")
+        data_base = paths_from_json(cfg["sample_json"], cfg["base_path"], "data")
         if "data_path" not in cfg:
             parser.error("Config must contain 'data_path' when using --data")
 
@@ -870,8 +867,8 @@ def main():
         constraint_var=constraint_var,
         batch_size=cfg.get("batch_size", 4096),
     )
+
     sys.exit()
-    
     os.makedirs("dataset", exist_ok=True)
     torch.save(train_loader.dataset, f"dataset/{Path(args.config).stem}_training.pt")
     torch.save(val_loader.dataset, f"dataset/{Path(args.config).stem}_validation.pt")

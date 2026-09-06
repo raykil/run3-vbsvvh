@@ -1,5 +1,6 @@
 # HWW
 
+sample_json: "single/samples_run2_2L_1FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
 
 training_features:
@@ -12,13 +13,15 @@ training_features:
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
-  - fatjet_mass: log
+  - fatjet_gloParTmass: log
+  - fatjet_msoftdrop: log
   - fatjet_tau2: none
   - fatjet_tau1: none
 
 split_features: ["lepton_"]
 
-derived_vars: {}
+derived_vars:
+  fatjet_gloParTmass: "fatjet_mass * fatjet_globalParT3_massCorrX2p"
 
 extra_vars:
   - weight

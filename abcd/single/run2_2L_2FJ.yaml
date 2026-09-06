@@ -1,5 +1,6 @@
 # HWZ / HZZ
 
+sample_json: "single/samples_run2_2L_2FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r2_2lep_2FJ_20260615211710_2lep_2FJ/"
 
 # tag higgs jet first, higher Hbb score is Higgs jet
@@ -13,8 +14,8 @@ training_features:
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
-  - fatjet_mass: log
-  - fatjet_msoftdrop: log # only in 2FJ maybe
+  - fatjet_gloParTmass: log
+  - fatjet_msoftdrop: log
   - fatjet_tau1: none
   - fatjet_tau2: none
   - ht_fatjets: log # only in 2FJ good
@@ -22,7 +23,9 @@ training_features:
 
 split_features: ["lepton_", "fatjet_"]
 
-derived_vars: {}
+derived_vars:
+  fatjet_gloParTmass_1: "fatjet_mass_1 * fatjet_globalParT3_massCorrX2p_1"
+  fatjet_gloParTmass_2: "fatjet_mass_2 * fatjet_globalParT3_massCorrX2p_2"
 
 extra_vars:
   - weight
