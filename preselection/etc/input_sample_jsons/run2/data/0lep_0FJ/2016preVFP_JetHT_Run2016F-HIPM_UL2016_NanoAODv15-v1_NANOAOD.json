@@ -5,10 +5,10 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_4.root"
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_1.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_2.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_3.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/JetHT_Run2016F-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_4.root"
             ],
             "metadata": {
                 "kind": "data",
@@ -17,7 +17,7 @@
                 "lumi": 19.52,
                 "shortname": "JetHT",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 0.0
             }
         }

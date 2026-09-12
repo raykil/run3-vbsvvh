@@ -1,0 +1,42 @@
+{
+    "samples": {
+        "DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025": {
+            "trees": [
+                "Events"
+            ],
+            "files": [
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_1.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_10.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_11.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_12.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_13.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_14.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_15.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_16.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_17.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_18.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_19.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_2.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_20.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_21.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_3.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_4.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_5.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_6.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_7.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_8.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3_NANOAODSIMSummer24for2025/output_9.root"
+            ],
+            "metadata": {
+                "kind": "bkg",
+                "year": "2025",
+                "xsec": 179.3,
+                "lumi": 110.84,
+                "shortname": "DYto2L-2Jets_Bin-2J-MLL-50-PTLL-40to100",
+                "do_ewk_corr": 0,
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
+                "sumw": 583861511979.3539
+            }
+        }
+    }
+}

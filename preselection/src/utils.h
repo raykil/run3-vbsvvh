@@ -34,6 +34,14 @@ DEFINE METADATA
 RNode defineMetadata(RNode df, bool isData);
 std::string getCategoryFromConfig(const std::string& config_path);
 
+struct BTagEfficiencyMetadata {
+    std::string sample;
+    std::string year;
+};
+BTagEfficiencyMetadata getSingleSampleBTagEfficiencyMetadata(const std::string& config_path);
+std::vector<BTagEfficiencyMetadata> getBTagEfficiencyMetadata(const std::string& config_path);
+std::vector<std::string> getMCYearsFromConfig(const std::string& config_path);
+
 class FilterOnePerKind {
     std::unordered_set<size_t> _seenCategories;
 public:

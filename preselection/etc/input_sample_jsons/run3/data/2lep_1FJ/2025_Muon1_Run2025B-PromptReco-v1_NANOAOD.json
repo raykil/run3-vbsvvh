@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep1FJ/Muon1_Run2025B-PromptReco-v1_NANOAOD/output_1.root"
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep1FJ/Muon1_Run2025B-PromptReco-v1_NANOAOD/output_1.root"
             ],
             "metadata": {
                 "kind": "data",
@@ -14,7 +14,7 @@
                 "lumi": 110.84,
                 "shortname": "Muon",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 0.0
             }
         }

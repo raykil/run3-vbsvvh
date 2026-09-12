@@ -5,20 +5,20 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_10.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_11.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_12.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_13.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_14.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_5.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_6.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_7.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_8.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_9.root"
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_1.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_10.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_11.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_12.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_13.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_14.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_2.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_3.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_4.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_5.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_6.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_7.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_8.root",
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_0Lep0FJ/SingleMuon_Run2016H-UL2016_NanoAODv15-v1_NANOAOD/output_9.root"
             ],
             "metadata": {
                 "kind": "data",
@@ -27,7 +27,7 @@
                 "lumi": 16.81,
                 "shortname": "SingleMuon",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 0.0
             }
         }

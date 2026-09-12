@@ -1,0 +1,157 @@
+preliminary_families:
+  VBS_VVH:
+    - VBSWWH_
+    - VBSWZH_
+    - VBSZZH_
+  VBS_SSWW:
+    - VBS-SSWW
+  WWJJ:
+    - WWJJ
+    - EWKW
+  ZZJJ:
+    - ZZJJ
+    - EWKZ
+  ggZZ_continuum:
+    - GluGluToContinto2Z
+    - GluGlutoContinto2Z
+    - GluGluToContin
+  ggH:
+    - GluGluH-
+    - GluGluH
+  VH:
+    - GluGluZH
+    - ggZH
+    - WplusH
+    - WminusH
+    - ZH-
+    - ZH_
+    - VBFWH
+    - VHToNonbb
+  ttH:
+    - TTH-
+    - ttHT
+    - ttHTo
+  ttV_rare:
+    - TTWW
+    - TTWZ
+    - TTW-
+    - TZQB
+    - TTWJets
+    - TTZTo
+    - ttWJets
+    - ttZJets
+    - TWZTo
+    - tZq_
+  ttbar:
+    - TTto
+    - TTLL
+    - TTLNu
+    - TTTo
+  tW:
+    - TWminus
+    - TbarWplus
+    - ST_tW_
+  single_top:
+    - TBbarQ
+    - TbarBQ
+    - TBbarto
+    - TbarBto
+    - ST_s-channel
+    - ST_t-channel
+  triboson:
+    - WWW-
+    - WWZ-
+    - WZZ-
+    - ZZZ-
+  WZ:
+    - WZ_
+    - WZto
+    - WZTo
+    - WZJJ
+  WW:
+    - WW_
+    - WWto
+    - WWTo
+  ZZ:
+    - ZZ_
+    - ZZto
+    - ZZTo
+  DY:
+    - DYto
+    - DYJetsTo
+  W_leptonic:
+    - WtoLNu
+    - WJetsToLNu
+  W_hadronic:
+    - Wto2Q
+    - WJetsToQQ
+  Z_hadronic:
+    - Zto2Q
+    - ZJetsToQQ
+  QCD_HT:
+    - QCD-4Jets
+    - QCD_HT
+  QCD_PT:
+    - QCD_Bin
+final_merges:
+  samples:
+    VBS_VVH:
+      - VBS_VVH
+    WWJJ_VBSWW:
+      - WWJJ
+      - VBS_SSWW
+    ZZJJ:
+      - ZZJJ
+    ggZZ_continuum:
+      - ggZZ_continuum
+    ggH:
+      - ggH
+    VH:
+      - VH
+    ttH:
+      - ttH
+    ttV_rare:
+      - ttV_rare
+    ttbar:
+      - ttbar
+    tW:
+      - tW
+    single_top:
+      - single_top
+    triboson:
+      - triboson
+    VZ:
+      - WZ
+      - ZZ
+    WW:
+      - WW
+    DY:
+      - DY
+    W_leptonic:
+      - W_leptonic
+    W_hadronic:
+      - W_hadronic
+    Z_hadronic:
+      - Z_hadronic
+    QCD:
+      - QCD_HT
+      - QCD_PT
+  channels:
+    0lep_0FJ:
+      - 0lep_0FJ
+    0lep_1FJ:
+      - 0lep_1FJ
+    0lep_2FJ+:
+      - 0lep_2FJ
+      - 0lep_3FJ
+    leptonic:
+      - 1lep_1FJ
+      - 1lep_2FJ
+      - 2lep_1FJ
+      - 2lep_2FJ
+      - 3lep
+      - 4lep
+excluded_source_channels:
+  - all_events
+  - 0lep_1FJ_met
+  - 0lep_2FJ_met

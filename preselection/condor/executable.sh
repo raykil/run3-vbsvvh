@@ -308,8 +308,10 @@ echo "=== Directory contents after analysis ==="
 ls -la
 ls -la $OUTPUTDIR/ 2>/dev/null || echo "Output directory not found"
 
-# Determine output file path (spanet_training uses a different output file name)
-if [[ "$EXTRA_FLAGS" == *"--spanet_training"* ]]; then
+# Determine output file path for the requested production mode.
+if [[ "$EXTRA_FLAGS" == *"--btag_eff"* ]]; then
+    OUTPUT_ROOT_FILE="$OUTPUTDIR/${OUTPUTFILE}_btag_eff.root"
+elif [[ "$EXTRA_FLAGS" == *"--spanet_training"* ]]; then
     OUTPUT_ROOT_FILE="$OUTPUTDIR/${OUTPUTFILE}_spanet_training_data.root"
 else
     OUTPUT_ROOT_FILE="$OUTPUTDIR/$OUTPUTFILE.root"
@@ -325,7 +327,20 @@ fi
 
 echo ""
 echo "=== Validating output ROOT file ==="
-validate_root_file "$OUTPUT_ROOT_FILE" "Events"
+if [[ "$EXTRA_FLAGS" == *"--btag_eff"* ]]; then
+    python3 - << EOF
+import sys
+import ROOT
+f = ROOT.TFile.Open("$OUTPUT_ROOT_FILE")
+required = [f"btag_{flavor}_{state}" for flavor in ("b", "c", "light")
+            for state in ("den", "T", "L", "LT", "N")]
+if not f or f.IsZombie() or any(not f.Get(name) for name in required):
+    sys.exit(1)
+f.Close()
+EOF
+else
+    validate_root_file "$OUTPUT_ROOT_FILE" "Events"
+fi
 if [ $? -ne 0 ]; then
     echo "ERROR: Output ROOT file validation failed"
     echo "Removing corrupted file: $OUTPUT_ROOT_FILE"
@@ -351,7 +366,7 @@ fi
 # Verify output file integrity at the destination via checksum comparison.
 # First try ADLER32 checksums (fast). If checksums can't be computed (e.g. gfal-sum
 # not available or XRootD doesn't support it), fall back to opening the remote file
-# with ROOT and checking the Events tree is readable.
+# with ROOT and checking the mode-appropriate output object is readable.
 # In either case, if verification fails the remote file is deleted to avoid leaving
 # corrupted files on storage that would look like successful output.
 echo "=== Verifying output file on XRootD ==="
@@ -375,12 +390,23 @@ try:
     if not f or f.IsZombie():
         print("[VALIDATE] ERROR: Cannot open remote file or file is zombie")
         sys.exit(1)
-    t = f.Get("Events")
-    if not t:
-        print("[VALIDATE] ERROR: Tree 'Events' not found in remote file")
-        f.Close()
-        sys.exit(1)
-    print(f"[VALIDATE] PASSED: Remote file readable with {t.GetEntries()} entries")
+    is_btag_eff = "--btag_eff" in "${EXTRA_FLAGS}"
+    if is_btag_eff:
+        required = [f"btag_{flavor}_{state}" for flavor in ("b", "c", "light")
+                    for state in ("den", "T", "L", "LT", "N")]
+        missing = [name for name in required if not f.Get(name)]
+        if missing:
+            print(f"[VALIDATE] ERROR: Missing b-tag efficiency histograms: {missing}")
+            f.Close()
+            sys.exit(1)
+        print("[VALIDATE] PASSED: Remote b-tag efficiency histograms are readable")
+    else:
+        t = f.Get("Events")
+        if not t:
+            print("[VALIDATE] ERROR: Tree 'Events' not found in remote file")
+            f.Close()
+            sys.exit(1)
+        print(f"[VALIDATE] PASSED: Remote file readable with {t.GetEntries()} entries")
     f.Close()
 except Exception as e:
     print(f"[VALIDATE] ERROR: {e}")

@@ -1,0 +1,24 @@
+{
+    "samples": {
+        "TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025": {
+            "trees": [
+                "Events"
+            ],
+            "files": [
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep0FJ/TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_1.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep0FJ/TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_2.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep0FJ/TbarBtoLNu-s-channel_TuneCP5_13p6TeV_powheg-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_3.root"
+            ],
+            "metadata": {
+                "kind": "bkg",
+                "year": "2025",
+                "xsec": 1.476,
+                "lumi": 110.84,
+                "shortname": "TbarBtoLNu-s-channel_TuneCP5_13p6TeV",
+                "do_ewk_corr": 0,
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
+                "sumw": 36747127.20000006
+            }
+        }
+    }
+}

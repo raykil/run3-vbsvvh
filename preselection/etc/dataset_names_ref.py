@@ -1011,6 +1011,53 @@ datasets = {
 
 }
 
+########################################################################################
+
+# Era clones: process one MC campaign as a second data era.
+#
+# CMS produced no 2025 MC, so the Summer24 campaign serves both the 2024 and 2025
+# data eras. The same skim has to be run twice, once tagged 2024Prompt and once
+# tagged 2025, so that each pass picks up its own era's lumi and calibrations.
+#
+# The clone cannot simply list the same files under a different sample name:
+# RDataFrame keys per-sample metadata (year, lumi, name, ...) by file path plus
+# tree name, so a merged local spec that lists a file twice hands both samples
+# the metadata of whichever was registered first. Each <dataset> skim directory
+# has therefore been symlinked as <dataset><suffix> in the skim area, and the
+# clone entry points at that symlink. Everything downstream (json key, "name"
+# branch, output subdirectory) then sees a distinct dataset with no special
+# handling. The suffix must match the symlink names on disk.
+
+MC_ERA_CLONE_SUFFIX = "Summer24for2025"
+
+mc_era_clones = {
+    ("run3", "sig") : [("2024Prompt", "2025", MC_ERA_CLONE_SUFFIX)],
+    ("run3", "bkg") : [("2024Prompt", "2025", MC_ERA_CLONE_SUFFIX)],
+}
+
+# For each (run_tag, kind) above, copy every dataset whose year is src_year, re-tag the
+# copy as clone_year, and point it at the suffixed directory name.
+def add_mc_era_clones(datasets, clones_to_add):
+
+    for run_kind, clone_specs in clones_to_add.items():
+        for src_year, clone_year, suffix in clone_specs:
+
+            # Build the copies first, then append, so we never grow the list we're looping over
+            clones = []
+            for dataset in datasets[run_kind]:
+                if dataset["year"] != src_year: continue
+                clone = dict(dataset)  # copy, so the original entry is untouched
+                clone["year"] = clone_year
+                clone["dataset_name"] = dataset["dataset_name"] + suffix
+                clones.append(clone)
+
+            datasets[run_kind] += clones
+
+add_mc_era_clones(datasets, mc_era_clones)
+
+########################################################################################
+
+
 # These datasets require a correction becuase of a bug in the MG generation
 # See https://github.com/cmstas/run3-vbsvvh/pull/28#issuecomment-3820814039
 datasets_for_ewk_corr = [

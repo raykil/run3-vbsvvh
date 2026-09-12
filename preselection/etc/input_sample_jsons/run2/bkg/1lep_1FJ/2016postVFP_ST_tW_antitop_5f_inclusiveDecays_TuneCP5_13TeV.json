@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM/output_1.root"
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM/output_1.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -14,7 +14,7 @@
                 "lumi": 16.81,
                 "shortname": "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 83024149.93800002
             }
         }

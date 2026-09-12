@@ -36,14 +36,17 @@ B-TAGGING WORKING POINTS
 RVec<bool> isbTagLoose(std::string year, RVec<float> btag_score);
 RVec<bool> isbTagMedium(std::string year, RVec<float> btag_score);
 RVec<bool> isbTagTight(std::string year, RVec<float> btag_score);
+RVec<bool> isbTagExtraTight(std::string year, RVec<float> btag_score);
+RVec<bool> isbTagExtraExtraTight(std::string year, RVec<float> btag_score);
 
 /*
 ############################################
 MET CORRECTIONS
 ############################################
 */
+
 RNode applyMETPhiCorrections(RNode df, bool isData);
-RNode applyMETUnclusteredCorrections(RNode df, std::string variation);
+RNode applyMETUnclusteredVariations(RNode df, bool isData);
 
 /*
 ############################################
@@ -81,7 +84,7 @@ JERC era table in corrections.cpp (see the pinning rationale documented there).
 
 // Full Type-1 PuppiMET rebuild from RawPuppiMET over the merged AK4 list (Jet + CorrT1METJet)
 // with muon subtraction, per the JERC recipe. Writes met_pt / met_phi (nominal) and, on MC with
-// systematics enabled, met_pt_<sfx> / met_phi_<sfx> for each JES variation. Must run AFTER
+// systematics enabled, met_pt_<sfx> / met_phi_<sfx> for each JES and JER variation. Must run AFTER
 // applyJetEnergyCorrections / applyJetEnergyResolution / applyJESVariations (it consumes
 // Jet_jerFactor and the _Jet_var_<sfx> columns and re-evaluates the JEC compound) and after
 // _Jet_rawpt = (1-Jet_rawFactor)*Jet_pt has been defined on the pristine NanoAOD jets.
@@ -110,26 +113,23 @@ RNode applyJetEnergyCorrections(const std::unordered_map<std::string, correction
 // <suffix> = "jes" + column_label + direction, e.g. "jesAbsoluteUp", "jesAbsoluteYearDn".
 RNode applyJESVariations(RNode df);
 
-// When called with false before any analysis, disables all JES/JER variation branches
-// (the suffix accessors below return empty, applyJESVariations becomes a no-op). Use
-// --no_systs to activate nominal-only mode.
+// Enables the JES/JER variation branches; called with false (the default) the suffix
+// accessors below return empty and applyJESVariations is a no-op. Nominal-only is the
+// default because most channels estimate their background from data, so background MC
+// does not need the variations. Pass --systs to store them.
 void setStoreSysts(bool v);
 
 // ---------------------------------------------------------------------------------------
 // DEBUGGING ONLY — jet veto map "compute but do not apply" mode.
 //
-// Called with false (via --no_jetveto), applyJetVetoMaps still DEFINES the per-jet
-// Jet_vetoMap flag, but AK4JetsSelection stops acting on it: the Run 3 event filter and
-// the `&& !Jet_vetoMap` term in every good-AK4 mask are both skipped. The output then
-// contains the events and jets the veto would have removed, tagged by Jet_vetoMap, so a
-// before/after study can be made from a SINGLE production by cutting on the flag offline.
-//
+// Called with false (via --no_jetveto).
 // *** NEVER use this for an analysis production. *** Output produced with --no_jetveto is
 // NOT veto-map corrected: it retains jets in known-bad (eta, phi) regions and, in Run 3,
 // events carrying the spurious MET the veto exists to remove. It is for the jet veto map
-// validation study only (vbs-coffea/scripts/jetveto_studies).
+// validation study only.
 void setApplyJetVetoMaps(bool v);
 bool applyJetVetoMapsEnabled();
+// ---------------------------------------------------------------------------------------
 
 // Public accessors for the variation suffixes. All return empty when
 // setStoreSysts(false) has been called.
@@ -137,19 +137,16 @@ bool applyJetVetoMapsEnabled();
 //   jerVariationSuffixes:       {"jerUp", "jerDn"}
 //   kinematicVariationSuffixes: JES + JER combined — the full list of suffixes for which
 //                               <collection>_pt_<sfx>/_mass_<sfx> (+ met_pt_<sfx>) may exist.
-//                               Consumers building per-variation selections should loop over
-//                               this and check column presence (variations are produced on MC
-//                               only today, and only by the correction steps that ran).
+//                               Consumers building per-variation selections should loop over this.
+//   unclusteredVariationSuffixes: {"metunclUp", "metunclDn"} — the MET-only UES suffixes.
 std::vector<std::string> jesVariationSuffixes();
 std::vector<std::string> jerVariationSuffixes();
 std::vector<std::string> kinematicVariationSuffixes();
+std::vector<std::string> unclusteredVariationSuffixes();
 
 // JER hybrid smearing (MC only). Defines Jet_jerFactor and redefines Jet_pt/Jet_mass to the
 // nominal-smeared values. With storeVariations, also writes the ±1σ SF variation branches
-// Jet_jerFactor_jerUp/Dn and Jet_pt/mass_jerUp/Dn (from the same pre-smear baseline, same
-// stochastic seed → fully correlated with the nominal). The ±1σ SF is ScaleFactor ±
-// SFUncertainty (split-tag format; the pinned ScaleFactor has no `systematic` axis).
-// All factors are consumed by applyType1MET for the MET rebuild.
+// Jet_jerFactor_jerUp/Dn and Jet_pt/mass_jerUp/Dn.
 RNode applyJetEnergyResolution(const std::unordered_map<std::string, correction::CorrectionSet>& cset_jerc,
                                const std::unordered_map<std::string, correction::CorrectionSet>& cset_jer_smear,
                                const std::unordered_map<std::string, std::string>& jer_res_map,

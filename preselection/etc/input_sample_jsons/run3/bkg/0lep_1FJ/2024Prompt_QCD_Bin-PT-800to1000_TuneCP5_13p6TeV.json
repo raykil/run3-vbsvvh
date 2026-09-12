@@ -5,13 +5,13 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_5.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_6.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_7.root"
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_1.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_2.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_3.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_4.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_5.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_6.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/QCD_Bin-PT-800to1000_TuneCP5_13p6TeV_pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_7.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -20,7 +20,7 @@
                 "lumi": 109.95,
                 "shortname": "QCD_Bin-PT-800to1000_TuneCP5_13p6TeV",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 79505640.0
             }
         }

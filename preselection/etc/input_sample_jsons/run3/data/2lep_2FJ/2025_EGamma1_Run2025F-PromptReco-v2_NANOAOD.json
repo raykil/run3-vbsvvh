@@ -5,18 +5,18 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_10.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_11.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_12.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_5.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_6.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_7.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_8.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_9.root"
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_1.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_10.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_11.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_12.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_2.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_3.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_4.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_5.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_6.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_7.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_8.root",
+                "VBSVVH_skim_v30/Run3_Data_v15_v30_2Lep2FJ/EGamma1_Run2025F-PromptReco-v2_NANOAOD/output_9.root"
             ],
             "metadata": {
                 "kind": "data",
@@ -25,7 +25,7 @@
                 "lumi": 110.84,
                 "shortname": "EGamma",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 0.0
             }
         }
