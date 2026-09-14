@@ -710,6 +710,18 @@ ELECTRON SFs
 ############################################
 */
 
+// The "year" axis inside the EGM jsons is EGM's campaign label, which does not always
+// match our era label -- we call the 2025 era "2025", EGM calls it "2025Prompt". Every
+// other era happens to coincide, so map only where it differs.
+static std::string egmYearKey(const std::string& year) {
+    static const std::unordered_map<std::string, std::string> m = {
+        {"2025", "2025Prompt"},
+    };
+    auto it = m.find(year);
+    return (it == m.end()) ? year : it->second;
+}
+
+
 RNode applyElectronRecoScaleFactors(std::unordered_map<std::string, correction::CorrectionSet> cset_electron, RNode df, std::string output_name) {
     auto eval_correction = [cset_electron] (std::string year, const RVec<float> eta, const RVec<float> pt) {
         RVec<double> electron_sf_weights = {1., 1., 1.};
@@ -731,31 +743,36 @@ RNode applyElectronRecoScaleFactors(std::unordered_map<std::string, correction::
 
         std::string correction_name = is_run2 ? "UL-Electron-ID-SF" : "Electron-ID-SF";
         auto correctionset = cset_electron.at(year).at(correction_name);
+        const std::string egm_year = egmYearKey(year);
 
         for (size_t i = 0; i < eta.size(); i++) {
             if (is_run2) {
                 if (pt[i] >= 20) {
-                    electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "RecoAbove20", eta[i], pt[i]});
-                    electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "RecoAbove20", eta[i], pt[i]});
-                    electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "RecoAbove20", eta[i], pt[i]});
+                    electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     "RecoAbove20", eta[i], pt[i]});
+                    electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   "RecoAbove20", eta[i], pt[i]});
+                    electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", "RecoAbove20", eta[i], pt[i]});
                 } else {
-                    electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "RecoBelow20", eta[i], pt[i]});
-                    electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "RecoBelow20", eta[i], pt[i]});
-                    electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "RecoBelow20", eta[i], pt[i]});
+                    const auto& low_pt = electronRecoLowPt.at(year);
+                    float pt_to_pass = std::max(pt[i], low_pt.pt_min);
+                    electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     low_pt.working_point, eta[i], pt_to_pass});
+                    electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   low_pt.working_point, eta[i], pt_to_pass});
+                    electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", low_pt.working_point, eta[i], pt_to_pass});
                 }
             } else {
                 if (pt[i] >= 20 && pt[i] < 75) {
-                    electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "Reco20to75", eta[i], pt[i]});
-                    electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "Reco20to75", eta[i], pt[i]});
-                    electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "Reco20to75", eta[i], pt[i]});
+                    electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     "Reco20to75", eta[i], pt[i]});
+                    electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   "Reco20to75", eta[i], pt[i]});
+                    electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", "Reco20to75", eta[i], pt[i]});
                 } else if (pt[i] >= 75) {
-                    electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "RecoAbove75", eta[i], pt[i]});
-                    electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "RecoAbove75", eta[i], pt[i]});
-                    electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "RecoAbove75", eta[i], pt[i]});
+                    electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     "RecoAbove75", eta[i], pt[i]});
+                    electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   "RecoAbove75", eta[i], pt[i]});
+                    electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", "RecoAbove75", eta[i], pt[i]});
                 } else {
-                    electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "RecoBelow20", eta[i], pt[i]});
-                    electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "RecoBelow20", eta[i], pt[i]});
-                    electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "RecoBelow20", eta[i], pt[i]});
+                    const auto& low_pt = electronRecoLowPt.at(year);
+                    float pt_to_pass = std::max(pt[i], low_pt.pt_min);
+                    electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     low_pt.working_point, eta[i], pt_to_pass});
+                    electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   low_pt.working_point, eta[i], pt_to_pass});
+                    electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", low_pt.working_point, eta[i], pt_to_pass});
                 }
             }
         }
@@ -783,10 +800,11 @@ RNode applyElectronIDScaleFactors(std::unordered_map<std::string, correction::Co
         }
 
         auto correctionset = cset_electron.at(year).at(config.correction_name_map.at(year));
+        const std::string egm_year = egmYearKey(year);
         for (size_t i = 0; i < eta.size(); i++) {
-            electron_sf_weights[0] *= correctionset->evaluate({year, "sf", config.working_point, eta[i], pt[i]});
-            electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", config.working_point, eta[i], pt[i]});
-            electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", config.working_point, eta[i], pt[i]});
+            electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     config.working_point, eta[i], pt[i]});
+            electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   config.working_point, eta[i], pt[i]});
+            electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", config.working_point, eta[i], pt[i]});
         }
         return electron_sf_weights;
     };
@@ -867,10 +885,11 @@ RNode applyElectronTriggerScaleFactors(std::unordered_map<std::string, correctio
             return electron_sf_weights;
         }
         auto correctionset = cset_electron.at(year).at(year_map.at(year));
+        const std::string egm_year = egmYearKey(year);
         for (size_t i = 0; i < eta.size(); i++) {
-            electron_sf_weights[0] *= correctionset->evaluate({year, "sf", "HLT_SF_Ele30_TightID", eta[i], pt[i]});
-            electron_sf_weights[1] *= correctionset->evaluate({year, "sfup", "HLT_SF_Ele30_TightID", eta[i], pt[i]});
-            electron_sf_weights[2] *= correctionset->evaluate({year, "sfdown", "HLT_SF_Ele30_TightID", eta[i], pt[i]});
+            electron_sf_weights[0] *= correctionset->evaluate({egm_year, "sf",     "HLT_SF_Ele30_TightID", eta[i], pt[i]});
+            electron_sf_weights[1] *= correctionset->evaluate({egm_year, "sfup",   "HLT_SF_Ele30_TightID", eta[i], pt[i]});
+            electron_sf_weights[2] *= correctionset->evaluate({egm_year, "sfdown", "HLT_SF_Ele30_TightID", eta[i], pt[i]});
         }
         return electron_sf_weights;
     };
