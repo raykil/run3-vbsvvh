@@ -2,9 +2,9 @@
 
 sample_json: "single/samples_run2_2L_2FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r2_2lep_2FJ_20260615211710_2lep_2FJ/"
+local_base_path: "/groups/cjessop/users/jkil/HVV_2L_RDF/run2_2FJ/"
 
-# tag higgs jet first, higher Hbb score is Higgs jet
-training_features:
+training_features: # tag higgs jet first, higher Hbb score is Higgs jet
   - lepton_pt: log
   - lepton_eta: minmax
   - lepton_phi: minmax
@@ -16,16 +16,16 @@ training_features:
   - fatjet_phi: minmax
   - fatjet_gloParTmass: log
   - fatjet_msoftdrop: log
-  - fatjet_tau1: none
   - fatjet_tau2: none
+  - fatjet_tau1: none
   - ht_fatjets: log # only in 2FJ good
   # - nFatJets: minmax # only in 2FJ
 
 split_features: ["lepton_", "fatjet_"]
 
 derived_vars:
-  fatjet_gloParTmass_1: "fatjet_mass_1 * fatjet_globalParT3_massCorrX2p_1"
-  fatjet_gloParTmass_2: "fatjet_mass_2 * fatjet_globalParT3_massCorrX2p_2"
+  fatjet_gloParTmass_1: "fatjet_mass_1 * fatjet_globalParT3_massCorrX2p_1 * (1 - fatjet_rawFactor_1)"
+  fatjet_gloParTmass_2: "fatjet_mass_2 * fatjet_globalParT3_massCorrX2p_2 * (1 - fatjet_rawFactor_2)"
 
 extra_vars:
   - weight
@@ -37,7 +37,7 @@ constraint_var: "vbs_score"
 preselection: "((fatjet_globalParT3_Xbb_1/(fatjet_globalParT3_Xbb_1+fatjet_globalParT3_QCD_1)) >= 0.1) | ((fatjet_globalParT3_Xbb_2/(fatjet_globalParT3_Xbb_2+fatjet_globalParT3_QCD_2)) >= 0.1)"
 # need to look which jet is selected
 
-learning_rate: 0.0001
+learning_rate: 0.001
 batch_size: 4096
 n_epochs: 1000
 

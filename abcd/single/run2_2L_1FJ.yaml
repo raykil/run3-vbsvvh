@@ -2,14 +2,15 @@
 
 sample_json: "single/samples_run2_2L_1FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_1FJ_r2_2lep_1FJ_20260615211230_2lep_1FJ/"
+local_base_path: "/groups/cjessop/users/jkil/HVV_2L_RDF/run2_1FJ/"
 
 training_features:
   - lepton_pt: log
   - lepton_eta: minmax
   - lepton_phi: minmax
   - lepton_mass: log
-  - met_phi: minmax
   - met_pt: log
+  - met_phi: minmax
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
@@ -21,8 +22,9 @@ training_features:
 split_features: ["lepton_"]
 
 derived_vars:
-  fatjet_gloParTmass: "fatjet_mass * fatjet_globalParT3_massCorrX2p"
+  fatjet_gloParTmass: "fatjet_mass * fatjet_globalParT3_massCorrX2p * (1 - fatjet_rawFactor)"
 
+# make sure to include 'weight' field here
 extra_vars:
   - weight
   - fatjet_globalParT3_Xbb
@@ -32,7 +34,7 @@ constraint_var: "vbs_score"
 
 preselection: "((fatjet_globalParT3_Xbb/(fatjet_globalParT3_Xbb+fatjet_globalParT3_QCD)) >= 0.1)" # Hbb tag score, need to work on optimal cut
 
-learning_rate: 0.0001
+learning_rate: 0.001
 batch_size: 4096
 n_epochs: 1000
 

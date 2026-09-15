@@ -2,6 +2,7 @@
 
 sample_json: "single/samples_run3_2L_2FJ.json"
 base_path: "root://eosuser.cern.ch//eos/user/r/rband/HVV2LRDF/merged_2lep_2FJ_r3_2lep_2FJ_20260615211951_2lep_2FJ/"
+local_base_path: "/groups/cjessop/users/jkil/HVV_2L_RDF/run3_2FJ/"
 
 training_features:
   - lepton_pt: log
@@ -13,15 +14,17 @@ training_features:
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
-  - fatjet_mass: log
+  - fatjet_gloParTmass: log
   - fatjet_msoftdrop: log # only in 2FJ maybe
-  - fatjet_tau1: none
   - fatjet_tau2: none
+  - fatjet_tau1: none
   - ht_fatjets: log # only in 2FJ good
 
 split_features: ["lepton_", "fatjet_"]
 
-derived_vars: {}
+derived_vars:
+  fatjet_gloParTmass_1: "fatjet_mass_1 * fatjet_globalParT3_massCorrX2p_1 * (1 - fatjet_rawFactor_1)"
+  fatjet_gloParTmass_2: "fatjet_mass_2 * fatjet_globalParT3_massCorrX2p_2 * (1 - fatjet_rawFactor_2)"
 # auto_include_derived_vars: false
 # auto_include_derived_vars_transform: none
 
@@ -34,7 +37,7 @@ constraint_var: "vbs_score"
 
 preselection: "((fatjet_globalParT3_Xbb_1/(fatjet_globalParT3_Xbb_1+fatjet_globalParT3_QCD_1)) >= 0.1) | ((fatjet_globalParT3_Xbb_2/(fatjet_globalParT3_Xbb_2+fatjet_globalParT3_QCD_2)) >= 0.1)"
 
-learning_rate: 0.0001
+learning_rate: 0.001
 batch_size: 4096
 n_epochs: 1000
 
