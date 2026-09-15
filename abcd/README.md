@@ -90,3 +90,7 @@ python3 main.py --config single/config_boosted_run3.yaml --flavor single --infer
 	- Container = pyTortch2.5
 	- Use A100 GPU node = True
 4. Run the notebook
+
+## How to draw plots
+Run `python inferAndPlot.py --run 2 --nFJ 1`.
+Output is stored in `abcd/plots`.

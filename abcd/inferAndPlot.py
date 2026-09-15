@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score, auc
 from TrainingTools import *
 
-def plot_validation_roc(model, val_loader, device="cpu", output_path="roc.png"):
+def plot_validation_roc(model, val_loader, device="cpu", output_path="roc.png", channel=""):
     model.to(device)
     model.eval()
 
@@ -45,6 +45,7 @@ def plot_validation_roc(model, val_loader, device="cpu", output_path="roc.png"):
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.title("Validation ROC Curve")
+    plt.text(0.98, 0.16, channel, ha="right", transform=plt.gca().transAxes)
     plt.legend(loc="lower right")
     plt.grid(alpha=0.3)
 
@@ -251,7 +252,7 @@ def main():
     plot_dir.mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    val_dataset = torch.load(base / "dataset" / f"{tag}_validation.pt", map_location="cpu", weights_only=False)
+    val_dataset = torch.load(base / "dataset" / f"{tag}_valid.pt", map_location="cpu", weights_only=False)
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=4096, shuffle=False, pin_memory=(device == "cuda"), num_workers=4)
 
     model = ABCDModel(
@@ -277,6 +278,7 @@ def main():
         val_loader,
         device=device,
         output_path=plot_dir / "roc.png",
+        channel=f"Run {args.run} nFJ={args.nFJ}",
     )
 
     plot_score_densities(
