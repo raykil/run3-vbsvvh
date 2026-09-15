@@ -1,0 +1,16 @@
+# Select the inclusive UParTAK4 working points used for runtime SF application.
+# Use [] to disable b-tag SFs for a channel. Lists must be ordered L,M,T,XT,XXT.
+all_events: []
+0lep_0FJ: [L, M, T, XT, XXT]
+0lep_1FJ: [T]
+0lep_1FJ_met: [L, M, T]
+0lep_2FJ: [L, M, T]
+0lep_2FJ_met: [T]
+0lep_3FJ: []
+1lep_1FJ: [T]
+1lep_2FJ: [T]
+2lep_1FJ: [T]
+2lepSS: [L, M, T, XT, XXT]
+2lep_2FJ: [M]
+3lep: [T]
+4lep: [L, T]

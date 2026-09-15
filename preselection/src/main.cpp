@@ -13,7 +13,11 @@
 
 #include "spanet.h"
 #include "spanet_run2.h"
+#include "btag_efficiencies.h"
+#include "btag_settings.h"
 
+#include <optional>
+#include <set>
 
 
 struct MyArgs : public argparse::Args {
@@ -32,7 +36,9 @@ struct MyArgs : public argparse::Args {
     bool &runSPANetInference     = flag("spanet_infer", "Run SPANet inference").set_default(false);
     bool &storeHLT = flag("store_hlt", "Store HLT trigger branches in output").set_default(false);
     bool &cutflow = flag("cutflow", "Print cutflow").set_default(false);
-    bool &no_systs = flag("no_systs", "Skip all JES/JER variation branches (nominal only)").set_default(false);
+    bool &makeBTagEfficiencies = flag("btag_eff", "Write selected-AK4 b-tag efficiency histograms (MC only)").set_default(false);
+    bool &skipBTagScaleFactors = flag("skip_btag_sf,skip-btag-sf", "Skip b-tag SF application (normally enabled)").set_default(false);
+    bool &systs = flag("systs", "Store JES/JER variation branches; nominal-only by default").set_default(false);
     bool &no_jetveto = flag("no_jetveto", "DEBUG ONLY: compute Jet_vetoMap but do not apply it (no Run 3 event veto, no jet masking). NOT for analysis production").set_default(false);
 };
 
@@ -65,8 +71,6 @@ int main(int argc, char** argv) {
     auto args = argparse::parse<MyArgs>(argc, argv);
     std::string input_spec = args.spec;
     std::string output_file = args.name;
-
-    setStoreSysts(!args.no_systs);
 
     setApplyJetVetoMaps(!args.no_jetveto);
     if (args.no_jetveto) {
@@ -113,12 +117,32 @@ int main(int argc, char** argv) {
         }
     }
 
-    // Create output directory
-    std::string output_dir = setOutputDirectory(args.outdir, args.makeSpanetTrainingdata);
-    
     if (args.run_number != "2" && args.run_number != "3") {
         throw std::runtime_error("Invalid run_number: must be 2 or 3");
     }
+
+    const bool channelBTagScaleFactors =
+        std::find(channels.begin(), channels.end(), args.ana) != channels.end()
+        ? bTagScaleFactorsEnabled(args.ana) : false;
+
+    // UParTAK4 has no matching fixed-WP calibration for the NanoAODv12
+    // 2022/2023 eras.  Do not derive efficiencies from the unrelated 2024
+    // thresholds used by the legacy selection configuration.
+    std::optional<BTagEfficiencyMetadata> btag_efficiency_metadata;
+    if (args.makeBTagEfficiencies) {
+        btag_efficiency_metadata = getSingleSampleBTagEfficiencyMetadata(input_spec);
+        const auto &year = btag_efficiency_metadata->year;
+        if (year == "2022Re-recoBCD" || year == "2022Re-recoE+PromptFG" ||
+            year == "2023PromptC" || year == "2023PromptD") {
+            throw std::runtime_error(
+                "--btag_eff is not supported for " + year +
+                ": UParTAK4 fixed-WP thresholds/SFs are unavailable for NanoAODv12. "
+                "Use a supported tagger with a matched implementation, or run 2024/2025 production.");
+        }
+    }
+
+    // Create output only after validating the requested b-tag workflow.
+    std::string output_dir = setOutputDirectory(args.outdir, args.makeSpanetTrainingdata);
     std::cout << " -> Running analysis for Run " << args.run_number << std::endl;
     
     std::unique_ptr<SPANet::SPANetInference> spanet_inference;
@@ -186,6 +210,30 @@ int main(int argc, char** argv) {
         std::exit(EXIT_FAILURE);
     }
 
+    if (args.makeBTagEfficiencies && isData) {
+        std::cerr << "B-tag efficiencies can only be measured from MC samples" << std::endl;
+        return EXIT_FAILURE;
+    }
+    // Background MC is normally nominal-only: the analysis is data driven, so the bkg
+    // variations are never used. Warn but honour the flag -- a deliberate bkg syst pass
+    // is a legitimate cross-check, it just should not happen by accident.
+    if (args.systs && !isData && !isSignal) {
+        std::cout << "\n"
+                  << "  ############################################################\n"
+                  << "  ##  WARNING: --systs on a BACKGROUND sample               ##\n"
+                  << "  ############################################################\n"
+                  << "  kind = '" << kind << "'. The JES/JER variation branches will be\n"
+                  << "  written for background MC. The statistical analysis is data\n"
+                  << "  driven, so these are not used by it -- this costs a large\n"
+                  << "  multiple of the disk and CPU of the nominal-only production.\n"
+                  << "  If that was not deliberate, drop --systs and submit signal\n"
+                  << "  separately (run_rdf.py --kinds sig --systs).\n"
+                  << "  ############################################################\n"
+                  << std::endl;
+    }
+    setStoreSysts(args.systs);
+    std::cout << " -> JES/JER variation branches: " << (args.systs ? "STORED (--systs)" : "not stored (nominal only)") << std::endl;
+
     bool makeSpanetTrainingdata = args.makeSpanetTrainingdata;
     if (!isSignal) {
         makeSpanetTrainingdata = false; // do not make training data for non-signal samples
@@ -208,8 +256,30 @@ int main(int argc, char** argv) {
     } else {
         std::cout << " -> Running MC analysis" << std::endl;
         df = applyMCCorrections(df);
-        df = runAnalysis(df, args.ana, args.run_number, isSignal, isData, spanet_inference.get(), spanet_inference_run2.get(), args.runSPANetInference, makeSpanetTrainingdata);
-        df = applyMCWeights(df);
+        df = runAnalysis(df, args.ana, args.run_number, isSignal, isData,
+                         spanet_inference.get(), spanet_inference_run2.get(),
+                         args.runSPANetInference, makeSpanetTrainingdata);
+        if (args.makeBTagEfficiencies) {
+            const int nslots = args.nthread > 1 ? args.nthread : 1;
+            std::cout << " -> Saving raw b-tag efficiency histograms" << std::endl;
+            saveBTagEfficiencyHistograms(df, output_dir, output_file, args.ana,
+                                         btag_efficiency_metadata->year, btag_efficiency_metadata->sample, nslots);
+            return 0;
+        }
+        const bool applyBTagScaleFactors = channelBTagScaleFactors && !args.skipBTagScaleFactors;
+        const auto btag_working_points = applyBTagScaleFactors
+            ? bTagWorkingPointsForChannel(args.ana) : std::vector<std::string>{};
+        const auto btag_contexts = applyBTagScaleFactors
+            ? prepareBTagEfficiencyContexts(getBTagEfficiencyMetadata(input_spec), args.ana, btag_working_points)
+            : BTagEfficiencyContexts{};
+        if (args.skipBTagScaleFactors)
+            std::cout << " -> B-tag SF application disabled by --skip-btag-sf" << std::endl;
+        else if (!channelBTagScaleFactors)
+            std::cout << " -> B-tag SF application disabled for " << args.ana
+                      << " by applybtag.yaml" << std::endl;
+        else
+            std::cout << " -> Applying b-tag SFs" << std::endl;
+        df = applyMCWeights(df, args.ana, applyBTagScaleFactors, btag_working_points, btag_contexts);
     }
 
     Cutflow::Add(df, "After SFs and corrections");

@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Sig_v15_v30_Sig/VBSZZH_c2v1p5_c3_1p0_Run3Summer24/output_1.root"
+                "VBSVVH_skim_v30/Run3_Sig_v15_v30_Sig/VBSZZH_c2v1p5_c3_1p0_Run3Summer24/output_1.root"
             ],
             "metadata": {
                 "kind": "sig",
@@ -14,7 +14,7 @@
                 "lumi": 109.95,
                 "shortname": "VBSZZH_c2v1p5_c3_1p0",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 100000.0
             }
         }

@@ -1,0 +1,23 @@
+{
+    "samples": {
+        "DYto2L-2Jets_Bin-1J-MLL-50-PTLL-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025": {
+            "trees": [
+                "Events"
+            ],
+            "files": [
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_1Lep1FJ/DYto2L-2Jets_Bin-1J-MLL-50-PTLL-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_1.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_1Lep1FJ/DYto2L-2Jets_Bin-1J-MLL-50-PTLL-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_2.root"
+            ],
+            "metadata": {
+                "kind": "bkg",
+                "year": "2025",
+                "xsec": 3.382,
+                "lumi": 110.84,
+                "shortname": "DYto2L-2Jets_Bin-1J-MLL-50-PTLL-200to400",
+                "do_ewk_corr": 0,
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
+                "sumw": 442284590.80587596
+            }
+        }
+    }
+}

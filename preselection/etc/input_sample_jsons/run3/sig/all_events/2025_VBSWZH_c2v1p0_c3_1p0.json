@@ -1,0 +1,22 @@
+{
+    "samples": {
+        "VBSWZH_c2v1p0_c3_1p0_Run3Summer24Summer24for2025": {
+            "trees": [
+                "Events"
+            ],
+            "files": [
+                "VBSVVH_skim_v30/Run3_Sig_v15_v30_Sig/VBSWZH_c2v1p0_c3_1p0_Run3Summer24Summer24for2025/output_1.root"
+            ],
+            "metadata": {
+                "kind": "sig",
+                "year": "2025",
+                "xsec": 0.000474,
+                "lumi": 110.84,
+                "shortname": "VBSWZH_c2v1p0_c3_1p0",
+                "do_ewk_corr": 0,
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
+                "sumw": 100000.0
+            }
+        }
+    }
+}

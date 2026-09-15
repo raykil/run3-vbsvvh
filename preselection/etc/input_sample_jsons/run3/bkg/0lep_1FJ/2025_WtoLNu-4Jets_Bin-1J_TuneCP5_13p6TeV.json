@@ -1,0 +1,57 @@
+{
+    "samples": {
+        "WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025": {
+            "trees": [
+                "Events"
+            ],
+            "files": [
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_1.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_10.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_11.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_12.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_13.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_14.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_15.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_16.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_17.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_18.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_19.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_2.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_20.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_21.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_22.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_23.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_24.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_25.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_26.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_27.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_28.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_29.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_3.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_30.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_31.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_32.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_33.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_34.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_35.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_36.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_4.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_5.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_6.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_7.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_8.root",
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_0Lep1FJ/WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV_madgraphMLM-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIMSummer24for2025/output_9.root"
+            ],
+            "metadata": {
+                "kind": "bkg",
+                "year": "2025",
+                "xsec": 9141.0,
+                "lumi": 110.84,
+                "shortname": "WtoLNu-4Jets_Bin-1J_TuneCP5_13p6TeV",
+                "do_ewk_corr": 0,
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
+                "sumw": 13586456902817.572
+            }
+        }
+    }
+}

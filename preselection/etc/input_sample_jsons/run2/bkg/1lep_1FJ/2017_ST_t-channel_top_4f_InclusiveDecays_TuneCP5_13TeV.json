@@ -5,17 +5,17 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_10.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_11.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_5.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_6.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_7.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_8.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_9.root"
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_1.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_10.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_11.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_2.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_3.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_4.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_5.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_6.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_7.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_8.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_1Lep1FJ/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_9.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -24,7 +24,7 @@
                 "lumi": 41.48,
                 "shortname": "ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 13808000809.115997
             }
         }

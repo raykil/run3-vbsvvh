@@ -5,11 +5,11 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_5.root"
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_1.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_2.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_3.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_4.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_2Lep1FJ/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM/output_5.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -18,7 +18,7 @@
                 "lumi": 59.83,
                 "shortname": "ZZTo2L2Nu_TuneCP5_13TeV",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 55393058.96873601
             }
         }

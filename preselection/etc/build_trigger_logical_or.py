@@ -161,6 +161,24 @@ DS_DICT_0lep0FJ = {
             ],
         },
     },
+
+    # 2025 reuses the 2024 paths.
+    "2025" : {
+        "ds_prio_lst" : None,
+        "ds_trg_dict" : {
+            "JetMET" : [
+                "HLT_QuadPFJet103_88_75_15_PNet2BTag_0p4_0p12_VBF1",
+                "HLT_QuadPFJet103_88_75_15_PNetBTag_0p4_VBF2",
+                "HLT_QuadPFJet105_88_76_15_PNet2BTag_0p4_0p12_VBF1",
+                "HLT_QuadPFJet105_88_76_15_PNetBTag_0p4_VBF2",
+                "HLT_QuadPFJet111_90_80_15_PNet2BTag_0p4_0p12_VBF1",
+                "HLT_QuadPFJet111_90_80_15_PNetBTag_0p4_VBF2",
+
+                "HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50",
+                # "HLT_PFHT450_SixPFJet36_PNetBTag0p35",
+            ],
+        },
+    },
 }
 
 DS_DICT_0lep1FJ = {
@@ -228,6 +246,17 @@ DS_DICT_0lep1FJ = {
     },
 
     "2024" : {
+        "ds_prio_lst" : None,
+        "ds_trg_dict" : {
+            "JetMET" : [
+                "HLT_AK8PFJet250_SoftDropMass40_PNetBB0p06",
+                "HLT_AK8PFJet425_SoftDropMass30",
+            ],
+        },
+    },
+
+    # 2025 reuses the 2024 paths.
+    "2025" : {
         "ds_prio_lst" : None,
         "ds_trg_dict" : {
             "JetMET" : [

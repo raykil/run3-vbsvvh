@@ -19,6 +19,10 @@ MAKEFLAGS := --jobs=8
 
 SRCS = $(wildcard src/*.cpp)
 OBJS = $(patsubst src/%.cpp,build/%.o,$(SRCS))
+DEPS = $(OBJS:.o=.d)
+
+# -MP adds phony targets for the listed headers, so removing one does not break the build.
+DEPFLAGS = -MMD -MP
 
 TARGET = runAnalysis
 
@@ -31,7 +35,10 @@ main: $(OBJS) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(MY_FLAGS) $(OBJS) -o $(BIN_DIR)/$(TARGET)
 
 build/%.o: src/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CPPFLAGS) $(MY_FLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(DEPFLAGS) $(MY_FLAGS) -c $< -o $@
+
+# Rebuild an object when any header it includes changes.
+-include $(DEPS)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -43,7 +50,7 @@ $(BIN_DIR):
 
 
 clean:
-	$(RM) $(OBJS) bin/$(TARGET)
+	$(RM) $(OBJS) $(DEPS) bin/$(TARGET)
 
 clearplots:
 	$(RM)

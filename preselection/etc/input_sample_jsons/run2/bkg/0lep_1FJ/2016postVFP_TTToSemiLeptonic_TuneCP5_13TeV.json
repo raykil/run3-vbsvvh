@@ -5,18 +5,18 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_1.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_10.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_11.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_12.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_2.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_3.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_4.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_5.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_6.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_7.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_8.root",
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_9.root"
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_1.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_10.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_11.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_12.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_2.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_3.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_4.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_5.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_6.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_7.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_8.root",
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_0Lep1FJ/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v2_NANOAODSIM/output_9.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -25,7 +25,7 @@
                 "lumi": 16.81,
                 "shortname": "TTToSemiLeptonic_TuneCP5_13TeV",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 43624104146.17201
             }
         }

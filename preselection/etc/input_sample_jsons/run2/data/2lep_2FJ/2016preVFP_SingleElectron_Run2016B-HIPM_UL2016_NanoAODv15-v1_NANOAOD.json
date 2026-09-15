@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Data_v15_v30_2Lep2FJ/SingleElectron_Run2016B-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_1.root"
+                "VBSVVH_skim_v30/Run2_Data_v15_v30_2Lep2FJ/SingleElectron_Run2016B-HIPM_UL2016_NanoAODv15-v1_NANOAOD/output_1.root"
             ],
             "metadata": {
                 "kind": "data",
@@ -14,7 +14,7 @@
                 "lumi": 19.52,
                 "shortname": "SingleElectron",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 0.0
             }
         }

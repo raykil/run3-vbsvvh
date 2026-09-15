@@ -31,6 +31,7 @@ DEFAULT_NCPUS = 4
 DEFAULT_MEMORY = "8gb"
 DEFAULT_PARTITION = "hpg-default"
 DEFAULT_TIME = "04:00:00"
+SUPPORTED_BTAG_EFF_YEARS = {"2016preVFP", "2016postVFP", "2017", "2018", "2024Prompt"}
 
 
 # ============================================================================
@@ -40,9 +41,10 @@ DEFAULT_TIME = "04:00:00"
 class JobManifest:
     """Tracks job submissions and their status."""
 
-    def __init__(self, task_dir: Path):
+    def __init__(self, task_dir: Path, published_path: Optional[Path] = None):
         self.task_dir = task_dir
         self.manifest_path = task_dir / "manifest.json"
+        self.published_path = published_path
         self.data = {
             "task_name": task_dir.name,
             "created": datetime.now().isoformat(),
@@ -51,17 +53,37 @@ class JobManifest:
             "analysis": "",
             "run_number": 0,
             "output_dir": "",
+            "btag_eff": False,
+            "btag_eff_year": None,
+            "samples": {},
             "jobs": {}
         }
 
-    def set_metadata(self, config: str, analysis: str, run_number: int, output_dir: str):
+    def set_metadata(self, config: str, analysis: str, run_number: int, output_dir: str,
+                     btag_eff: bool = False, btag_eff_year: Optional[str] = None):
         self.data["config"] = config
         self.data["analysis"] = analysis
         self.data["run_number"] = run_number
         self.data["output_dir"] = output_dir
+        self.data["btag_eff"] = btag_eff
+        self.data["btag_eff_year"] = btag_eff_year
+
+    def add_sample(self, sample_name: str, n_files: int, status: str = "prepared",
+                   reason: Optional[str] = None):
+        if sample_name in self.data["samples"]:
+            raise ValueError(f"Sample {sample_name} was added to the manifest more than once")
+        self.data["samples"][sample_name] = {
+            "status": status,
+            "reason": reason,
+            "n_files": n_files,
+            "job_indices": [],
+        }
 
     def add_job(self, job_id: str, sample_name: str, job_idx: int,
                 input_files: List[str], job_dir: str):
+        if sample_name not in self.data["samples"]:
+            raise ValueError(f"Job {job_id} refers to unregistered sample {sample_name}")
+        self.data["samples"][sample_name]["job_indices"].append(job_idx)
         self.data["jobs"][job_id] = {
             "sample": sample_name,
             "job_idx": job_idx,
@@ -81,8 +103,12 @@ class JobManifest:
             job["submit_time"] = datetime.now().isoformat()
 
     def save(self):
-        with open(self.manifest_path, 'w') as f:
-            json.dump(self.data, f, indent=2)
+        for path in (self.manifest_path, self.published_path):
+            if path is None:
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, 'w') as f:
+                json.dump(self.data, f, indent=2)
 
     @classmethod
     def load(cls, task_dir: Path) -> 'JobManifest':
@@ -142,16 +168,22 @@ Examples:
                         help="Generate SPANet training data (--spanet_training flag)")
     parser.add_argument("--spanet-infer", action="store_true",
                         help="Run SPANet inference (--spanet_infer flag)")
-    parser.add_argument("--store_hlt", action="store_true",
+    parser.add_argument("--store-hlt", "--store_hlt", dest="store_hlt", action="store_true",
                         help="Store HLT trigger branches in output")
+    parser.add_argument("--btag-eff", action="store_true",
+                        help="Write raw selected-AK4 b-tag efficiency histograms (--btag_eff flag)")
+    parser.add_argument("--year",
+                        help="Required metadata year for --btag-eff production")
+    parser.add_argument("--skip-btag-sf", action="store_true",
+                        help="Skip b-tag SF application (normally enabled)")
+    parser.add_argument("--systs", action="store_true",
+                        help="Store JES/JER variation branches (default: nominal only)")
     parser.add_argument("--no_jetveto", action="store_true",
-                        help="DEBUG ONLY: compute Jet_vetoMap but do not apply it. "
-                             "NOT for analysis production (jet veto map study only)")
+                        help="DEBUG ONLY: compute Jet_vetoMap but do not apply it")
     parser.add_argument("--account", default=None,
                         help="SLURM account (e.g., avery)")
     parser.add_argument("--qos", default=None,
                         help="SLURM QoS (e.g., avery-b)")
-
     return parser.parse_args()
 
 
@@ -218,6 +250,12 @@ def generate_slurm_script(task_dir: Path, job_dir: Path, job_name: str,
         extra_flags += " --spanet_infer"
     if args.store_hlt:
         extra_flags += " --store_hlt"
+    if args.systs:
+        extra_flags += " --systs"
+    if args.btag_eff:
+        extra_flags += " --btag_eff"
+    if args.skip_btag_sf:
+        extra_flags += " --skip-btag-sf"
     if args.no_jetveto:
         extra_flags += " --no_jetveto"
 
@@ -273,6 +311,12 @@ def generate_array_sbatch(task_dir: Path, job_entries: List[dict],
         extra_flags += " --spanet_infer"
     if args.store_hlt:
         extra_flags += " --store_hlt"
+    if args.systs:
+        extra_flags += " --systs"
+    if args.btag_eff:
+        extra_flags += " --btag_eff"
+    if args.skip_btag_sf:
+        extra_flags += " --skip-btag-sf"
     if args.no_jetveto:
         extra_flags += " --no_jetveto"
 
@@ -287,8 +331,7 @@ def generate_array_sbatch(task_dir: Path, job_entries: List[dict],
 #SBATCH --time={args.time}
 #SBATCH --cpus-per-task={args.ncpus}
 #SBATCH --partition={args.partition}
-{acct_line}{qos_line}
-#SBATCH --array=0-{n_jobs - 1}
+{acct_line}{qos_line}#SBATCH --array=0-{n_jobs - 1}
 #SBATCH --output={task_dir}/slurm_default_%A_%a.out
 #SBATCH --error={task_dir}/slurm_default_%A_%a.err
 
@@ -328,7 +371,7 @@ def create_tarball(preselection_dir: Path) -> Path:
     spanet_run3_dir = "spanet/v2/"
     # Items to include in tarball (from preselection dir)
     preselection_items = [
-        "Makefile", "src", "include", "corrections", "bdt",
+        "Makefile", "src", "include", "corrections", "bdt", "applybtag.yaml",
         spanet_run2_dir, spanet_run3_dir
     ]
 
@@ -345,12 +388,46 @@ def create_tarball(preselection_dir: Path) -> Path:
     return tarball_path
 
 
+def prepare_output_directory(output_path: Path, btag_eff: bool, year: Optional[str]) -> Optional[Path]:
+    """Create an output directory without permitting b-tag batch mixing."""
+    if not btag_eff:
+        output_path.mkdir(parents=True, exist_ok=True)
+        return None
+    if output_path.exists() and any(output_path.iterdir()):
+        manifest = output_path / "manifest.json"
+        if not manifest.is_file():
+            raise ValueError(
+                f"Refusing to mix a new b-tag efficiency submission into existing channel output "
+                f"{output_path}. Choose a new --output-dir or remove the previous complete submission.")
+        try:
+            existing = json.loads(manifest.read_text())
+        except json.JSONDecodeError as error:
+            raise ValueError(f"Existing b-tag manifest is unreadable: {manifest}: {error}")
+        if existing.get("btag_eff_year") != year:
+            raise ValueError(
+                f"Refusing to mix b-tag years in {output_path}: existing={existing.get('btag_eff_year')!r}, requested={year!r}")
+        raise ValueError(
+            f"Refusing to mix a new b-tag efficiency submission into existing channel output "
+            f"{output_path}. Choose a new --output-dir or remove the previous complete submission.")
+    output_path.mkdir(parents=True, exist_ok=True)
+    return output_path / "manifest.json"
+
+
 # ============================================================================
 # Main
 # ============================================================================
 
 def main():
     args = parse_args()
+    if args.btag_eff and not args.year:
+        print("ERROR: --btag-eff requires --year")
+        sys.exit(1)
+    if args.btag_eff and args.year not in SUPPORTED_BTAG_EFF_YEARS:
+        print(f"ERROR: --btag-eff is unsupported for {args.year}")
+        sys.exit(1)
+    if args.btag_eff and args.sample:
+        print("ERROR: --sample cannot be used with --btag-eff because the final payload requires every configured sample.")
+        sys.exit(1)
 
     # Determine paths
     script_dir = Path(__file__).parent.resolve()
@@ -363,10 +440,6 @@ def main():
         print(f"ERROR: Config file not found: {config_path}")
         sys.exit(1)
 
-    # Create tarball of analysis code
-    print("Creating tarball...")
-    create_tarball(preselection_dir)
-
     # Load config
     with open(config_path) as f:
         config = json.load(f)
@@ -375,6 +448,13 @@ def main():
     if not samples:
         print("ERROR: No samples found in config")
         sys.exit(1)
+
+    if args.btag_eff:
+        mismatched = [name for name, info in samples.items()
+                      if info.get("metadata", {}).get("year") != args.year]
+        if mismatched:
+            print(f"ERROR: --btag-eff year {args.year!r} does not match samples: {mismatched}")
+            sys.exit(1)
 
     # Filter samples if --sample specified
     if args.sample:
@@ -397,7 +477,22 @@ def main():
         print("Please remove it or use a different --tag")
         sys.exit(1)
 
+    # B-tag efficiency outputs are consumed directly by the converter as
+    # OUTPUT_ROOT/CHANNEL/{manifest.json,SAMPLE/output_N.root}.  Do this
+    # check before creating a task directory or tarball so a rejected rerun
+    # leaves no misleading submission artifacts behind.
+    output_path = Path(args.output_dir)
+    try:
+        published_manifest = prepare_output_directory(output_path, args.btag_eff, args.year)
+    except ValueError as error:
+        print(f"ERROR: {error}")
+        sys.exit(1)
+
     task_dir.mkdir(parents=True)
+
+    # Create the package only after the submission/output checks passed.
+    print("Creating tarball...")
+    create_tarball(preselection_dir)
 
     # Copy executable and tarball to task dir
     subprocess.run(["cp", str(script_dir / "executable.sh"),
@@ -406,12 +501,9 @@ def main():
                     str(task_dir / "package.tar.gz")], check=True)
 
     # Initialize manifest
-    manifest = JobManifest(task_dir)
-    manifest.set_metadata(args.config, args.analysis, args.run_number, args.output_dir)
-
-    # Create output directory
-    output_path = Path(args.output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
+    manifest = JobManifest(task_dir, published_manifest)
+    manifest.set_metadata(args.config, args.analysis, args.run_number, args.output_dir,
+                          args.btag_eff, args.year)
 
     print(f"\n{'='*60}")
     print(f"SLURM Job Submission for run3-vbsvvh")
@@ -428,6 +520,7 @@ def main():
     print(f"CPUs/job:     {args.ncpus}")
     print(f"Memory/job:   {args.memory}")
     print(f"Partition:    {args.partition}")
+    print(f"QOS:          {args.qos or '(default)'}")
     print(f"Time limit:   {args.time}")
     print(f"Task dir:     {task_dir}")
     print(f"{'='*60}\n")
@@ -447,7 +540,10 @@ def main():
 
         if not all_files:
             print(f"  Skipping {sample_name}: no files found")
+            manifest.add_sample(sample_name, 0, "skipped_no_files", "no_files_found")
             continue
+
+        manifest.add_sample(sample_name, len(all_files))
 
         # Split files into chunks
         if args.events_per_job:
@@ -494,6 +590,9 @@ def main():
             total_jobs += 1
 
     if not job_entries:
+        # Preserve the complete configured-sample record for diagnostics and
+        # make a later final conversion reject this incomplete production.
+        manifest.save()
         print("ERROR: No jobs to submit (all samples had no files)")
         sys.exit(1)
 

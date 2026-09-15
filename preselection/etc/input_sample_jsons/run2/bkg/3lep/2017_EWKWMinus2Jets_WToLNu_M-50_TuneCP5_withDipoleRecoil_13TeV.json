@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run2_Bkg_v15_v30_3Lep/EWKWMinus2Jets_WToLNu_M-50_TuneCP5_withDipoleRecoil_13TeV-madgraph-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_1.root"
+                "VBSVVH_skim_v30/Run2_Bkg_v15_v30_3Lep/EWKWMinus2Jets_WToLNu_M-50_TuneCP5_withDipoleRecoil_13TeV-madgraph-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM/output_1.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -14,7 +14,7 @@
                 "lumi": 41.48,
                 "shortname": "EWKWMinus2Jets_WToLNu_M-50_TuneCP5_withDipoleRecoil_13TeV",
                 "do_ewk_corr": 1,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 4077000.0
             }
         }

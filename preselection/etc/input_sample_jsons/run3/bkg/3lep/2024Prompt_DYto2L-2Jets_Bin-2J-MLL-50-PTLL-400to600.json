@@ -5,7 +5,7 @@
                 "Events"
             ],
             "files": [
-                "store/user/phchang/skim/VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-400to600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_1.root"
+                "VBSVVH_skim_v30/Run3_Bkg_v15_v30_3Lep/DYto2L-2Jets_Bin-2J-MLL-50-PTLL-400to600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2_NANOAODSIM/output_1.root"
             ],
             "metadata": {
                 "kind": "bkg",
@@ -14,7 +14,7 @@
                 "lumi": 109.95,
                 "shortname": "DYto2L-2Jets_Bin-2J-MLL-50-PTLL-400to600",
                 "do_ewk_corr": 0,
-                "local_prefix": "/cmsuf/data/",
+                "local_prefix": "/cmsuf/data/store/user/phchang/skim/",
                 "sumw": 10032993.635827204
             }
         }
