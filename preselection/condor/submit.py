@@ -28,10 +28,10 @@ import uproot
 
 # Constants
 CONDOR_OUTPUT_DIR = "jobs"
-OUTPUT_XRD = "root://redirector.t2.ucsd.edu:1095//store/user/{user}/vbsvvh/preselection/run3-vbsvvh"
+OUTPUT_XRD = "file:///groups/cjessop/users/{user}/HVV_2L_RDF"
 DEFAULT_FILES_PER_JOB = 10
 DEFAULT_NCPUS = 4
-DEFAULT_MEMORY = "2G"
+DEFAULT_MEMORY = "8G"
 SITES = "T2_US_UCSD"
 JOB_FLAVOUR = "espresso"
 SINGULARITY_IMAGE = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el8:x86_64"
@@ -61,12 +61,12 @@ class JobManifest:
             "jobs": {}
         }
 
-    def set_metadata(self, config: str, analysis: str, run_number: int, user: str):
+    def set_metadata(self, config: str, analysis: str, run_number: int, user: str, output_name: str):
         """Set task-level metadata."""
         self.data["config"] = config
         self.data["analysis"] = analysis
         self.data["run_number"] = run_number
-        self.data["output_base"] = OUTPUT_XRD.format(user=user) + "/" + self.data["task_name"]
+        self.data["output_base"] = OUTPUT_XRD.format(user=user) + "/" + output_name
 
     def add_job(
         self,
@@ -157,6 +157,8 @@ Examples:
                         help="Run number (2 or 3)")
     parser.add_argument("-t", "--tag", default="",
                         help="Optional tag for output directory naming")
+    parser.add_argument("--output-name", default=None,
+                        help="Output directory under OUTPUT_XRD; submissions sharing it write to one place (default: task name)")
     parser.add_argument("-j", "--ncpus", type=int, default=DEFAULT_NCPUS,
                         help=f"Number of CPUs per job (default: {DEFAULT_NCPUS})")
     parser.add_argument("-m", "--memory", default=DEFAULT_MEMORY,
@@ -431,10 +433,10 @@ def generate_submit_file(task_dir: Path, job_dir: Path, job_name: str,
 
     # Arguments passed to executable:
     # USER N_CPUS CONFIG_FILE OUTPUT_NAME ANALYSIS RUN_NUMBER SAMPLE_NAME JOB_IDX [EXTRA_FLAGS]
-    job_args = f"{user} {args.ncpus} config.json {job_name} {args.analysis} {args.run_number} {sample_name} {job_idx} {extra_flags}"
+    job_args = f"{user} {args.ncpus} config.json {args.output_name} {args.analysis} {args.run_number} {sample_name} {job_idx} {extra_flags}"
 
     submit_content = f"""universe                = Vanilla
-Requirements            = ((HAS_SINGULARITY=?=True))
+Requirements            = (HasSingularity =?= True)
 RequestMemory           = {args.memory}
 RequestCpus             = {args.ncpus}
 executable              = {task_dir}/executable.sh
@@ -673,6 +675,7 @@ def main():
     job_name = f"{config_basename}_{args.analysis}"
     if args.tag:
         job_name = f"{job_name}_{args.tag}"
+    args.output_name = args.output_name or job_name
 
     # Create task directory
     task_dir = preselection_dir / "condor" / CONDOR_OUTPUT_DIR / job_name
@@ -685,7 +688,7 @@ def main():
 
     # Initialize job manifest
     manifest = JobManifest(task_dir)
-    manifest.set_metadata(args.config, args.analysis, args.run_number, user)
+    manifest.set_metadata(args.config, args.analysis, args.run_number, user, args.output_name)
 
     print(f"\n{'='*60}")
     print(f"Condor Job Submission for run3-vbsvvh")
@@ -833,7 +836,7 @@ def main():
     print(f"{'='*60}")
     print(f"\nManifest saved to: {task_dir}/manifest.json")
     print(f"Job logs will be in each job's directory under: {task_dir}/")
-    print(f"Output will be staged to: {OUTPUT_XRD.format(user=user)}/{job_name}/")
+    print(f"Output will be staged to: {OUTPUT_XRD.format(user=user)}/{args.output_name}/")
     print(f"\nTo check status:")
     print(f"  python condor/status.py --task {job_name}")
 

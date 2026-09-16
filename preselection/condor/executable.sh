@@ -27,7 +27,7 @@ EXTRA_FLAGS="$@"
 # Constants
 OUTPUTDIR="output"
 OUTPUTFILE="output"
-OUTPUT_XRD="root://redirector.t2.ucsd.edu:1095//store/user/$USER/vbsvvh/preselection/"
+OUTPUT_XRD="file:///groups/cjessop/users/$USER/HVV_2L_RDF"
 CMSSW_VERSION='CMSSW_16_1_0_pre2'
 MAX_RETRIES=5
 SLEEP_DURATION="1m"
@@ -227,6 +227,9 @@ EOF
 }
 
 # Main script
+# The job container has no /etc/grid-security, so the proxy check and xrootd reads need the CVMFS CA/VOMS dirs
+export X509_CERT_DIR=${X509_CERT_DIR:-/cvmfs/grid.cern.ch/etc/grid-security/certificates}
+export X509_VOMS_DIR=${X509_VOMS_DIR:-/cvmfs/grid.cern.ch/etc/grid-security/vomsdir}
 echo ""
 echo "=== Checking proxy ==="
 PROXY_TIMELEFT=$(voms-proxy-info -timeleft 2>&1)

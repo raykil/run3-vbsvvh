@@ -233,8 +233,7 @@ def main():
             with open(merged_json_name, 'w') as outfile:
                 json.dump(job_config, outfile, indent=4)
 
-            outdir = output_dir_for_channel(args.outpath, args.outname, chan_name, args.mode,
-                                            args.btag_eff, args.year)
+            outdir = output_dir_for_channel(args.outpath, args.outname, chan_name, args.mode, args.btag_eff, args.year)
             if not (args.btag_eff and args.mode == "slurm") and not os.path.isdir(outdir):
                 os.makedirs(outdir)
             print(f"  -> RDF output will be located in: {outdir}")
@@ -255,7 +254,7 @@ def main():
             elif args.mode == "condor":
                 dry_run_flag = " --dry-run" if args.dry_run else ""
                 ncores_flag = f" -j {args.n_cores}" if args.n_cores else ""
-                command = f"python3 condor/submit.py -c {merged_json_name} -a {chan_name} --run_number {args.run} --files-per-job {args.files_per_job}{ncores_flag}{hlt_flag}{systs_flag}{jetveto_flag}{btag_eff_flag}{skip_btag_sf_flag}{sample_flag}{dry_run_flag}"
+                command = f"python3 condor/submit.py -c {merged_json_name} -a {chan_name} --run_number {args.run} --output-name run{args.run}_{chan_name.removeprefix('2lep_')} --files-per-job {args.files_per_job}{ncores_flag}{hlt_flag}{systs_flag}{jetveto_flag}{btag_eff_flag}{skip_btag_sf_flag}{sample_flag}{dry_run_flag}"
                 print(f"  -> Running command \"{command}\"...\n")
                 subprocess.run(command, shell=True, check=True)
             elif args.mode == "slurm":
