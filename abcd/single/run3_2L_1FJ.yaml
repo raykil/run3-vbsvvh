@@ -14,15 +14,14 @@ training_features:
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
-  - fatjet_gloParTmass: log
+  - fatjet_massGloParT3: log
   - fatjet_msoftdrop: log
   - fatjet_tau2: none
   - fatjet_tau1: none
 
 split_features: ["lepton_"]
 
-derived_vars:
-  fatjet_gloParTmass: "fatjet_mass * fatjet_globalParT3_massCorrX2p * (1 - fatjet_rawFactor)"
+derived_vars: {}
 auto_include_derived_vars: false
 auto_include_derived_vars_transform: none
 

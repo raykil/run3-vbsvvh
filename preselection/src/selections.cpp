@@ -316,7 +316,7 @@ RNode AK4JetProperties(RNode df_)
 RNode AK8JetsSelection(RNode df_)
 {
     auto df = df_.Define("_dR_ak8_lep", VVdR, {"FatJet_eta", "FatJet_phi", "lepton_eta", "lepton_phi"})
-                  .Define("_good_ak8jets", ak8GoodJetSelectionExpr("FatJet_pt"));
+                 .Define("_good_ak8jets", ak8GoodJetSelectionExpr("FatJet_pt"));
 
     // GloParT regressed mass: the calibrated AK8 mass used by the analysis. massCorrX2p is a
     // ratio predicting the particle-level mass from the RAW jet, so it multiplies the raw mass
@@ -685,7 +685,8 @@ RNode runPreselection(RNode df_, std::string channel, bool noCut, bool isData)
         // Channel orthogonality selection
         df = definePerVariationPassFlags(df, "2lep_1FJ", [](const std::string& sfx){
             const std::string fjCountCol = sfx.empty() ? "nfatjet" : "nfatjet_" + sfx;
-            return "(nLep_Sel == 2) && (" + fjCountCol + " == 1)";
+            const std::string jCountCol  = sfx.empty() ? "njet"     : "njet_"     + sfx;
+            return "(nLep_Sel == 2) && (" + fjCountCol + " == 1) && (" + jCountCol + " >= 2)";
         });
         df = df.Filter(orPassExpr(df, "2lep_1FJ"), "C2: 2lep_1FJ");
     }
@@ -704,7 +705,8 @@ RNode runPreselection(RNode df_, std::string channel, bool noCut, bool isData)
         // Channel orthogonality selection
         df = definePerVariationPassFlags(df, "2lep_2FJ", [](const std::string& sfx){
             const std::string fjCountCol = sfx.empty() ? "nfatjet" : "nfatjet_" + sfx;
-            return "(nLep_Sel == 2) && (" + fjCountCol + " == 2)";
+            const std::string jCountCol  = sfx.empty() ? "njet"     : "njet_"     + sfx;
+            return "(nLep_Sel == 2) && (" + fjCountCol + " == 2) && (" + jCountCol + " >= 2)";
         });
         df = df.Filter(orPassExpr(df, "2lep_2FJ"), "C2: 2lep_2FJ");
     }

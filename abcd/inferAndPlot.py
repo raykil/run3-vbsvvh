@@ -244,6 +244,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run", type=int, choices=[2, 3], required=True)
     parser.add_argument("--nFJ", type=int, choices=[1, 2], required=True)
+    parser.add_argument("--dataset", required=True, help="Dated dataset dir written by main.py, e.g. 260916_dataset")
+    parser.add_argument("--signal", default="c2v1p5_c3_1p0", choices=["c2v1p0_c3_1p0", "c2v1p0_c3_10p0", "c2v1p5_c3_1p0"])
     args = parser.parse_args()
 
     base = Path(__file__).resolve().parent
@@ -252,7 +254,7 @@ def main():
     plot_dir.mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    val_dataset = torch.load(base / "dataset" / f"{tag}_valid.pt", map_location="cpu", weights_only=False)
+    val_dataset = torch.load(base / args.dataset / args.signal / f"{tag}_valid.pt", map_location="cpu", weights_only=False)
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=4096, shuffle=False, pin_memory=(device == "cuda"), num_workers=4)
 
     model = ABCDModel(

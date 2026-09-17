@@ -14,7 +14,7 @@ training_features:
   - fatjet_pt: log
   - fatjet_eta: minmax
   - fatjet_phi: minmax
-  - fatjet_gloParTmass: log
+  - fatjet_massGloParT3: log
   - fatjet_msoftdrop: log # only in 2FJ maybe
   - fatjet_tau2: none
   - fatjet_tau1: none
@@ -22,9 +22,7 @@ training_features:
 
 split_features: ["lepton_", "fatjet_"]
 
-derived_vars:
-  fatjet_gloParTmass_1: "fatjet_mass_1 * fatjet_globalParT3_massCorrX2p_1 * (1 - fatjet_rawFactor_1)"
-  fatjet_gloParTmass_2: "fatjet_mass_2 * fatjet_globalParT3_massCorrX2p_2 * (1 - fatjet_rawFactor_2)"
+derived_vars: {}
 # auto_include_derived_vars: false
 # auto_include_derived_vars_transform: none
 

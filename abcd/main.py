@@ -3,8 +3,6 @@ import torch, uproot
 import numpy as np
 import awkward as ak
 import matplotlib.pyplot as plt
-# from XRootD import client
-# from concurrent.futures import ThreadPoolExecutor, as_completed
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -17,7 +15,7 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from TrainingTools import get_dataloader
+from TrainingTools import get_dataloader, chooseOverlaps
 from model import ABCDLightningModule
 warnings.filterwarnings("ignore", message=".*reduce_op.*")
 
@@ -26,34 +24,6 @@ MISSING_VALUE = -999.0
 def load_config(config_path):
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-
-# def paths_from_json(jsonpath, base_path, kind="sig"):
-#     with open(jsonpath, "r") as f:
-#         data = json.load(f)
-#         paths = []
-#         for entry in data["samples"]:
-#             if(str(data["samples"][entry]["metadata"]["kind"]) == kind):
-#                 if kind == "sig" and "c2v1p5" in str(data["samples"][entry]["metadata"]["shortname"]):
-#                     # only using c2v1p5, and not c2v1p0? Okay.
-#                     paths.append(base_path+entry+'/')
-#                 elif kind != "sig":
-#                     paths.append(base_path+entry+'/')
-#         files = []
-#         for path in paths:
-#             prefix, server, remote_path = path.split("//", 2)
-#             server = prefix+'//'+server
-#             xrdfs = client.FileSystem(server)
-#             status, listing = xrdfs.dirlist("/" + remote_path, client.flags.DirListFlags.STAT)
-#             if status.ok:
-#                 for entry in listing:
-#                     if not entry.name.endswith(".root"):
-#                         continue
-#                     if entry.statinfo is not None and entry.statinfo.size == 0:
-#                         logging.warning("Skipping empty file %s", path + entry.name)
-#                         continue
-#                     files.append(os.path.join(path, entry.name))
-#         if len(files)>0 and files[0].endswith('.root'): logging.info(f"{kind} files successfully loaded!")
-#     return files
 
 def resolve_paths(base, paths):
     if isinstance(paths, str):
@@ -122,66 +92,6 @@ def auto_include_derived_vars(cfg, features, transforms, derived_vars_cfg):
     transforms.update({name: auto_tf for name in added})
     logging.info(f"Auto-include derived vars enabled: added {len(added)} derived features with transform='{auto_tf}'")
 
-
-# def _normalize_derived_vars_cfg(derived_vars_cfg):
-#     # just ensuring derived vars is a dict.
-#     if derived_vars_cfg is None:
-#         return {}
-#     if isinstance(derived_vars_cfg, dict):
-#         return dict(derived_vars_cfg)
-#     if isinstance(derived_vars_cfg, list):
-#         normalized = {}
-#         for item in derived_vars_cfg:
-#             if not isinstance(item, dict):
-#                 raise ValueError("Each item in 'derived_vars' list must be a mapping of 'new_var: expression'.")
-#             for key, value in item.items():
-#                 normalized[key] = value
-#         return normalized
-#     raise ValueError("'derived_vars' must be either a mapping or a list of single-item mappings.")
-
-
-# def _collect_derived_input_vars(derived_vars_cfg):
-#     derived_names = set(derived_vars_cfg.keys())
-#     needed = []
-#     for expr in derived_vars_cfg.values():
-#         if not isinstance(expr, str):
-#             continue
-#         for var in extract_expression_variables(expr):
-#             if var not in derived_names:
-#                 needed.append(var)
-#     return derived_names, list(dict.fromkeys(needed))
-
-
-# def apply_derived_vars(data, derived_vars_cfg):
-#     # derived_vars_cfg = _normalize_derived_vars_cfg(derived_vars_cfg)
-#     # if not derived_vars_cfg:
-#     #     return data
-
-#     out = {k: np.asarray(v).copy() for k, v in data.items()}
-#     n_events = _data_length(out)
-
-#     for new_var, expression in derived_vars_cfg.items():
-#         if not isinstance(expression, str): raise ValueError(f"derived_vars['{new_var}'] must be a string expression")
-
-#         local_dict = {k: np.asarray(v) for k, v in out.items()}
-#         print(local_dict)
-#         values = np.asarray(eval(expression, {"__builtins__": {}, "np": np, "abs": np.abs}, local_dict))
-#         # try:
-#         #     values = np.asarray(eval(expression, {"__builtins__": {}, "np": np, "abs": np.abs}, local_dict))
-#         # except NameError as exc: raise ValueError(f"Failed to evaluate derived var '{new_var}': missing variable in expression '{expression}'") from exc
-#         # except Exception as exc: raise ValueError(f"Failed to evaluate derived var '{new_var}' with expression '{expression}': {exc}") from exc
-
-#         if values.ndim == 0:
-#             values = np.full(n_events, values.item())
-
-#         if len(values) != n_events:
-#             raise ValueError(f"Derived var '{new_var}' has length {len(values)} but expected {n_events}")
-
-#         out[new_var] = values
-#         print("Computed derived var '%s' from config expression", new_var)
-
-#     return out
-
 def apply_derived_vars(events, DerivedVars):
     for name, expression in DerivedVars.items():
         events[name] = eval(expression, locals={f: events[f] for f in events.fields})
@@ -195,53 +105,6 @@ def split_features(features, split_prefixes):
         else:
             split_features.append(feature)
     return split_features
-
-# def _read_root_frame(path, branches, file_idx, proc_idx, split_branches):
-#     with uproot.open(path) as root_file:
-#         arrays = root_file["Events"].arrays(branches, library="np")
-
-#     columns = {}
-#     n_events = None
-#     for branch in branches:
-#         if branch not in arrays:
-#             continue
-
-#         values = np.asarray(arrays[branch])
-#         if branch in split_branches:
-#             values = np.asarray(values, dtype=object)
-#             columns[branch + "_1"] = np.array([v[0] if len(v) > 0 else MISSING_VALUE for v in values])
-#             columns[branch + "_2"] = np.array([v[1] if len(v) > 1 else MISSING_VALUE for v in values])
-#             n_events = len(columns[branch + "_1"])
-#         else:
-#             values = np.asarray([_flatten_awkward_cell(v) for v in values])
-#             columns[branch] = values
-#             n_events = len(columns[branch])
-#  #       if values.ndim == 1 and values.dtype != object:
-#  #           clean_values = values
-#  #       else:
-#  #           flat_values = [_flatten_awkward_cell(v) for v in values]
-#  #           clean_values = np.asarray(values, dtype=object)
-#  #           clean_values = np.array([np.asarray(v, dtype=np.float64) for v in clean_values],
-#  #                           dtype=object)
-
-# #        if n_events is None:
-# #            n_events = len(columns[branch])
-# #        else:
-# #            n_events = min(n_events, len(columns[branch]))
-
-#  #       columns[branch] = clean_values
-
-#     if n_events is None or n_events == 0:
-#         return {
-#             "file_idx": np.array([], dtype=np.int32),
-#             "proc_idx": np.array([], dtype=np.int32),
-#         }
-
-#     trimmed = {name: np.asarray(vals)[:n_events] for name, vals in columns.items()}
-#     trimmed["file_idx"] = np.full(n_events, file_idx, dtype=np.int32)
-#     trimmed["proc_idx"] = np.full(n_events, proc_idx, dtype=np.int32)
-#     return trimmed
-
 
 def _flatten_awkward_cell(value):
     if np.isscalar(value):
@@ -264,32 +127,17 @@ def _safe_minmax_scale(values, valid_mask):
     scaled[valid_mask] = scaler.fit_transform(values[valid_mask].reshape(-1, 1)).ravel()
     return scaled
 
-def local_paths_from_json(jsonpath, base_path, kind='sig'):
+def local_paths_from_json(jsonpath, base_path, kind='sig', signal="c2v1p5_c3_1p0"):
     with open(jsonpath, 'r') as f: samples = json.load(f)["samples"]
-    names = [name for name, s in samples.items() if s["metadata"]["kind"] == kind and (kind != "sig" or "c2v1p5" in s["metadata"]["shortname"])]
+    names = [name for name, s in samples.items() if s["metadata"]["kind"] == kind and (kind != "sig" or s["metadata"]["shortname"].endswith(signal))]
     files = [f for name in names for f in sorted(glob.glob(os.path.join(base_path, name, "*.root"))) if os.path.getsize(f) > 0]
     return files
-
-# def new_load_data(paths, features, split_prefixes) -> dict[str, np.ndarray]:
-#     Paths = [f"{path}:Events" for path in paths]
-#     data = uproot.concatenate(Paths, features, library="np")
-
-#     for branch in [b for b in features if data[b].dtype == object]:
-#         values = data.pop(branch)
-#         suffixes = ("_1", "_2") if branch.startswith(split_prefixes) else ("",)
-#         for i, s in enumerate(suffixes): # non-split branches keep only the leading object
-#             data[branch + s] = np.array([v[i] if len(v) > i else MISSING_VALUE for v in values])
-
-#     counts = [uproot.open(p).num_entries for p in Paths]
-#     samples = sorted({Path(p).parent.name for p in paths})
-#     data["file_idx"] = np.repeat(np.arange(len(paths)), counts).astype(np.int32) # increments per root file
-#     data["proc_idx"] = np.repeat([samples.index(Path(p).parent.name) for p in paths], counts).astype(np.int32) # increments per sample (e.g. DY=0, ttbar=1)
-#     return data
 
 def LoadEvents(paths, features, split_prefixes, label):
     """Trying to migrate to awkward array"""
     # Adding idxs
-    paths = sorted(paths, key=lambda p: Path(p).parent.name)
+    rejected = chooseOverlaps()
+    paths = sorted((p for p in paths if Path(p).parent.name not in rejected), key=lambda p: Path(p).parent.name)
     arrays, samples = [], {}
     for file_idx, path in enumerate(paths):
         arr = uproot.open(f"{path}:Events").arrays(features, library="ak")
@@ -298,6 +146,11 @@ def LoadEvents(paths, features, split_prefixes, label):
         arrays.append(arr)
     events = ak.concatenate(arrays)
 
+    # Additional cutflow (before flatten/split, which assume the channel's fatjet count)
+    events = events[events.weight>0]
+    events = events[ak.num(events.fatjet_pt) == (2 if "fatjet_" in split_prefixes else 1)] # TEMP: drop JES/JER-variation leaks from preselection (nominal fatjet count != channel's)
+    events = events[events.vbs_score != -999] # TEMP: -999 means nominal njet < 2; mirrors the njet >= 2 cut now in selections.cpp
+
     # Handling split_prefixes
     for field in events.fields:
         if field.startswith(split_prefixes):
@@ -305,66 +158,13 @@ def LoadEvents(paths, features, split_prefixes, label):
             events[f"{field}_2"] = events[field][:,1]
             events = ak.without_field(events, field)
         elif events[field].ndim > 1:
-            events[field] = ak.flatten(events[field]) # events[field] = ak.fill_none(ak.firsts(events[field]), MISSING_VALUE)
-
-    # saving only positive weights
-    events = events[events.weight>0]
+            events[field] = ak.flatten(events[field])
+            # events[field] = ak.fill_none(ak.firsts(events[field]), MISSING_VALUE) # flatten drops events with empty lists
 
     # Giving sig/bkg label for training
     events["label"] = int(label)
 
-    # print(np.round(events['weight'], 5).tolist()[:5], ak.count_nonzero(events['weight']<0), len(events['weight'])) # no negative weights!!
     return events
-
-# def load_data(paths, features, num_workers, split_prefixes):
-#     branches = list(dict.fromkeys(features))
-#     split_branches = {b for b in branches if b.startswith(split_prefixes)}
-
-#     sample_names = []
-#     for path in paths:
-#         p = Path(path)
-#         parent = p.parent.name
-#         grandparent = p.parent.parent.name if p.parent.parent is not None else ""
-#         sample_names.append(grandparent if parent.isdigit() and grandparent else parent)
-#     sample_name_to_idx = {name: idx for idx, name in enumerate(sorted(set(sample_names)))}
-#     indexed_paths = [
-#         (file_idx, path, sample_name_to_idx[sample_name])
-#         for file_idx, (path, sample_name) in enumerate(zip(paths, sample_names))
-#     ]
-#     chunks = [None] * len(indexed_paths)
-
-#     if num_workers > 1 and len(indexed_paths) > 1:
-#         max_workers = min(num_workers, len(indexed_paths))
-#         with ThreadPoolExecutor(max_workers=max_workers) as pool:
-#             futures = {
-#                 pool.submit(_read_root_frame, path, branches, file_idx, proc_idx, split_branches): file_idx
-#                 for file_idx, path, proc_idx in indexed_paths
-#             }
-#             for future in tqdm(as_completed(futures), total=len(futures), desc="Loading ROOT files"):
-#                 file_idx = futures[future]
-#                 chunks[file_idx] = future.result()
-#     else:
-#         for file_idx, path, proc_idx in tqdm(indexed_paths, total=len(indexed_paths), desc="Loading ROOT files"):
-#             chunks[file_idx] = _read_root_frame(path, branches, file_idx, proc_idx, split_branches)
-
-#     chunks = [chunk for chunk in chunks if chunk is not None]
-
-#     data = {key: np.concatenate([c[key] for c in chunks if key in c]) for key in {key for c in chunks for key in c}}
-#     print(f"Loaded {_data_length(data)} events from {len(paths)} files.")
-#     if "weight" in data:
-#         data = _apply_mask(data, np.asarray(data["weight"]) > 0)
-#     return data
-
-# def feature_length(data, feature):
-#     arr = np.asarray(data[feature])
-
-#     if arr.ndim == 1:
-#         if arr.dtype == object:
-#             lengths = [len(np.asarray(x).ravel()) for x in arr]
-#             return lengths
-#         return 1
-
-#     return arr.shape[1]
 
 def preprocess_data(data, training_features, feature_transforms, Constraint):
     out = {k: np.asarray(v).copy() for k, v in data.items()}
@@ -408,12 +208,6 @@ def log_transform(quantity):
     # keeps log1p(-0.999)=-6.9 from dominating the min-max range that follows.
     return np.log1p(np.clip(quantity, a_min=0, a_max=None))
 
-# def _safe_minmax_scale(values, valid_mask):
-#     scaled = np.zeros_like(values, dtype=np.float64)
-#     scaler = MinMaxScaler()
-#     scaled[valid_mask] = scaler.fit_transform(values[valid_mask].reshape(-1, 1)).ravel()
-#     return scaled
-
 def minmax_transform(quantity):
     scaler = MinMaxScaler(feature_range=(0,1))
     quantity = np.asarray(quantity).reshape(-1,1)
@@ -439,72 +233,9 @@ def preprocess(events, features, transforms, constraint):
 
     return events
 
-
-# def normalize_class_weights(sig_events, bkg_events):
-#     sig = {k: np.asarray(v).copy() for k, v in sig_events.items()}
-#     bkg = {k: np.asarray(v).copy() for k, v in bkg_events.items()}
-#     sig = sig_events ; bkg = bkg_events
-
-#     sig_weight_sum = np.sum(sig["weight"])
-#     bkg_weight_sum = np.sum(bkg["weight"])
-
-#     sig["weight"] = sig["weight"] / sig_weight_sum
-#     bkg["weight"] = bkg["weight"] / bkg_weight_sum
-#     return sig, bkg
-
 def normalize_weights(events):
     events["weight"] = events.weight / sum(events.weight)
     return events
-
-# def make_dataloaders(data, training_features, Constraint, batch_size):
-#     labels_str = np.asarray(data["label"]).astype(np.int32).astype(str)
-#     stratify_col = "proc_idx" if "proc_idx" in data else "file_idx"
-#     sample_str = np.asarray(data[stratify_col]).astype(np.int64).astype(str)
-#     stratify_key = np.char.add(np.char.add(labels_str, "_"), sample_str)
-#     logging.info("Using stratification column '%s' for train/val split", stratify_col)
-
-#     unique_keys, unique_counts = np.unique(stratify_key, return_counts=True)
-#     rare_keys = unique_keys[unique_counts < 2]
-#     if len(rare_keys) > 0:
-#         rare_mask = np.isin(stratify_key, rare_keys)
-#         stratify_key[rare_mask] = np.char.add(labels_str[rare_mask], "_rare")
-#         logging.info(f"Collapsed {len(rare_keys)} rare strata (<2 events) into label-level rare bins for stable splitting")
-
-#     all_indices = np.arange(_data_length(data))
-
-#     train_idx, val_idx = train_test_split(
-#         all_indices,
-#         test_size=0.2,
-#         random_state=42,
-#         stratify=stratify_key,
-#     )
-
-#     logging.info(f"Feature column order: {dict(enumerate(training_features))}")
-#     feature_matrix = np.column_stack([data[f] for f in training_features]).astype(np.float32, copy=False)
-#     constraint_values = np.asarray(data[Constraint], dtype=np.float32).reshape(-1, 1)
-#     labels = np.asarray(data["label"], dtype=np.float32)
-#     weights = np.asarray(data["weight"], dtype=np.float32)
-
-#     train_loader = get_dataloader(
-#         dnn_input_data=torch.from_numpy(feature_matrix[train_idx]),
-#         constraint_data=torch.from_numpy(constraint_values[train_idx]),
-#         labels=torch.from_numpy(labels[train_idx]),
-#         weights=torch.from_numpy(weights[train_idx]),
-#         batch_size=batch_size,
-#         use_sampler=False,
-#     )
-
-#     val_loader = get_dataloader(
-#         dnn_input_data=torch.from_numpy(feature_matrix[val_idx]),
-#         constraint_data=torch.from_numpy(constraint_values[val_idx]),
-#         labels=torch.from_numpy(labels[val_idx]),
-#         weights=torch.from_numpy(weights[val_idx]),
-#         batch_size=batch_size,
-#         use_sampler=False,
-#         is_validation=True,
-#     )
-
-#     return train_loader, val_loader
 
 def makeDataLoaders(events, features, constraint, batch_size):
     labl_str = np.asarray(events.label).astype(str) # ['1' '1' '1' ... '0' '0' '0']
@@ -891,27 +622,26 @@ def main():
     parser.add_argument('-i', "--infer"     , action="store_true", help="Skip training and run inference only")
     parser.add_argument('-p', "--checkpoint", default=None       , help="Path to model checkpoint (.ckpt) for inference. If omitted, auto-picks newest checkpoint.")
     parser.add_argument('-o', "--output_csv", default=None       , help="Output CSV path")
+    parser.add_argument('-s', "--signal"    , default="c2v1p5_c3_1p0", choices=["c2v1p0_c3_1p0", "c2v1p0_c3_10p0", "c2v1p5_c3_1p0"], help="Signal coupling point (c2v1p0_c3_1p0 is SM)")
     args = parser.parse_args()
 
     # —————————— Load config ————————————————————————————————————————————————————————————
-    print(f"\n—————————— Processing {Path(args.config).stem}——————————")
+    print(f"\n—————————— Processing {Path(args.config).stem} ——————————")
     cfg = load_config(args.config)
     TrainingFeatures, FeatureTransforms, constraint, split_prefixes = parse_training_features(cfg, args.flavor)
     derived_vars_cfg, DerivedVars, input_for_derivedVars, TrainingFeatures, FeatureTransforms = parse_derived_vars(cfg, TrainingFeatures, FeatureTransforms)
 
     # —————————— Loading samples ———————————————————————————————————————————
     VarsToLoad = TrainingFeatures + [constraint] + input_for_derivedVars + cfg.get("extra_vars", [])
-    # branches are stored unsplit; the _1/_2 forms only exist after LoadEvents splits them
     unsplit = lambda f: f[:-2] if f.startswith(split_prefixes) and f.endswith(("_1", "_2")) else f
     derived_bases = {unsplit(d) for d in DerivedVars}
     VarsToLoad = list(dict.fromkeys(unsplit(f) for f in VarsToLoad if unsplit(f) not in derived_bases))
     new_load_start = time.time()
-    sig_paths = local_paths_from_json(cfg["sample_json"], cfg["local_base_path"], "sig")
+    sig_paths = local_paths_from_json(cfg["sample_json"], cfg["local_base_path"], "sig", args.signal)
     bkg_paths = local_paths_from_json(cfg["sample_json"], cfg["local_base_path"], "bkg")
     sig_events = LoadEvents(sig_paths, VarsToLoad, split_prefixes, 1)
     bkg_events = LoadEvents(bkg_paths, VarsToLoad, split_prefixes, 0)
     print(f"Loaded sig+bkg in {time.time()-new_load_start:.1f} s")
-    
 
     # —————————— Something about data... ———————————————————————————————————————————
     # if args.data:
@@ -963,23 +693,6 @@ def main():
     TrainingFeatures = split_features(TrainingFeatures, split_prefixes)
     data = preprocess(data, TrainingFeatures, FeatureTransforms, constraint)
 
-
-    # —————————— Preprocess data ———————————————————————————————————————————
-    # print("Preprocessing data...")
-    # # combined_keys = set(sig_events.keys()) | set(bkg_events.keys())
-    # # data = {
-    # #     key: np.concatenate([sig_events.get(key, np.array([])), bkg_events.get(key, np.array([]))])
-    # #     for key in combined_keys
-    # # }
-    # data = apply_derived_vars(data, derived_vars_cfg)
-    # old_list = TrainingFeatures.copy()
-    # for f in old_list:
-    #     if f.startswith(split_prefixes):
-    #         ix = TrainingFeatures.index(f)
-    #         TrainingFeatures[ix : ix + 1] = [f.replace(f, f+"_1"), f.replace(f, f+"_2")]
-    # data = preprocess_data(data, TrainingFeatures, FeatureTransforms, constraint)
-    # sys.exit()
-
     if args.infer:
         logging.info("Skipping training. Running inference only...")
         run_inference(args, cfg, args.flavor, raw_sig_events, raw_bkg_events, TrainingFeatures, FeatureTransforms, constraint, derived_vars_cfg)
@@ -992,17 +705,10 @@ def main():
         batch_size = cfg.get("batch_size", 4096),
     )
 
-    # logging.info("Creating data loaders...")
-    # train_loader, valid_loader = make_dataloaders(
-    #     data=data,
-    #     training_features=TrainingFeatures,
-    #     Constraint=constraint,
-    #     batch_size=cfg.get("batch_size", 4096),
-    # )
-
-    os.makedirs("dataset", exist_ok=True)
-    torch.save(train_loader.dataset, f"dataset/{Path(args.config).stem}_train.pt")
-    torch.save(valid_loader.dataset, f"dataset/{Path(args.config).stem}_valid.pt")
+    dataset_dir = f"{time.strftime('%y%m%d')}_dataset/{args.signal}"
+    os.makedirs(dataset_dir, exist_ok=True)
+    torch.save(train_loader.dataset, f"{dataset_dir}/{Path(args.config).stem}_train.pt")
+    torch.save(valid_loader.dataset, f"{dataset_dir}/{Path(args.config).stem}_valid.pt")
     sys.exit()
     
     # lightning_model = ABCDLightningModule(
