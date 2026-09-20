@@ -113,25 +113,15 @@ if __name__=="__main__":
 
     # —————————— Load Dataset ——————————————————————————————————————————————————
     scriptPath = os.path.dirname(os.path.abspath(__file__))
-    datasetPath = f"{scriptPath}/dataset/{args.signal}/{args.tag}_valid.pt"
-    validation_dataset = torch.load(datasetPath, map_location="cpu", weights_only=False)
-    validation_loader  = torch.utils.data.DataLoader(validation_dataset, batch_size=4096, shuffle=False)
+    parqPath = f"{scriptPath}/dataset/{args.signal}/{args.tag}.parq"
+    events = ak.from_parquet(parqPath)
+    events = events[events.split == "valid"] # decorrelation must be judged on events the model never trained on
 
-    nEvents, nFeatures = validation_dataset.data.shape
-    nBkg, nSig = np.count_nonzero(validation_dataset.labels==0), np.count_nonzero(validation_dataset.labels==1)
+    SCORES , DISCOS  = ak.to_numpy(events.ABCDscore), ak.to_numpy(events.norm_VBSscore)
+    LABELS , WEIGHTS = ak.to_numpy(events.label)    , ak.to_numpy(events.norm_weight)
+    nEvents = len(events) ; nBkg, nSig = np.count_nonzero(LABELS==0), np.count_nonzero(LABELS==1)
     print(f"\n\033[1m—————————— {args.tag} | {args.signal} ——————————\033[0m")
-    print(f"nEvents={nEvents}(weighted:{sum(validation_dataset.weights):.3f}) | bkg={nBkg}({100*nBkg/nEvents:.3f}%) | sig={nSig}({100*nSig/nEvents:.3f}%) | nFeatures={nFeatures}")
-
-    # —————————— Load Model ——————————————————————————————————————————————————
-    model = makeModel(nFeatures)[0]
-    modelPath = f"{scriptPath}/models/{args.signal}/{args.tag}_best_model.pt"
-    device = "cpu"
-    model.load_state_dict(torch.load(modelPath, map_location=device))
-    model.to(device) # Load model param tensors to device.
-    model.eval() # switch from train mode to eval mode. Dropout stops dropping neurons, and batch-norm uses stored running stats.
-
-    # —————————— Evaluate ABCDNet Score ——————————————————————————————————————————————————
-    SCORES, DISCOS, LABELS, WEIGHTS = evalABCDscore(model, validation_loader)
+    print(f"nEvents={nEvents}(weighted:{WEIGHTS.sum():.3f}) | bkg={nBkg}({100*nBkg/nEvents:.3f}%) | sig={nSig}({100*nSig/nEvents:.3f}%)")
 
     # —————————— Plotting ——————————————————————————————————————————————————
     makeScoreDensity, makeVBS_vs_ABCD, makeDiscoHist = (flag == '1' for flag in args.make)

@@ -2,6 +2,7 @@ validation/
 **/*archive*/
 **/*working*
 *old_*
+*.parq
 
 .vscode/
 .DS_Store

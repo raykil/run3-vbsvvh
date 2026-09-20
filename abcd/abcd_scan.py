@@ -8,17 +8,11 @@ if __name__=="__main__":
 
     # —————————— Load all MC ——————————————————————————————————————————————————
     scriptPath = os.path.dirname(os.path.abspath(__file__))
-    splits = [torch.load(f"{scriptPath}/dataset/{args.signal}/{args.tag}_{split}.pt", map_location="cpu", weights_only=False) for split in ("train", "valid")]
-    loader = torch.utils.data.DataLoader(torch.utils.data.ConcatDataset(splits), batch_size=4096, shuffle=False)
+    parqPath = f"{scriptPath}/dataset/{args.signal}/{args.tag}.parq"
+    events = ak.from_parquet(parqPath) # train+valid, since the scan measures yields rather than validating the model
 
-    # —————————— Load Model ——————————————————————————————————————————————————
-    nFeatures = splits[0].data.shape[1]
-    model = makeModel(nFeatures)[0]
-    model.load_state_dict(torch.load(f"{scriptPath}/models/{args.signal}/{args.tag}_best_model.pt", map_location=next(model.parameters()).device))
-    model.eval() # switch from train mode to eval mode. Dropout stops dropping neurons, and batch-norm uses stored running stats.
-
-    # —————————— Evaluate ABCDNet Score ——————————————————————————————————————————————————
-    SCORES, DISCOS, LABELS, WEIGHTS = evalABCDscore(model, loader)
+    SCORES , DISCOS  = ak.to_numpy(events.ABCDscore), ak.to_numpy(events.VBSscore) # raw VBS score keeps cut values interpretable
+    LABELS , WEIGHTS = ak.to_numpy(events.label)    , ak.to_numpy(events.weight)   # raw weights, so yields are physical
     nBkg, nSig = np.count_nonzero(LABELS==0), np.count_nonzero(LABELS==1)
     print(f"\n\033[1m—————————— {args.tag} | {args.signal} ——————————\033[0m")
-    print(f"nEvents={len(LABELS)} | bkg={nBkg}(weighted:{WEIGHTS[LABELS==0].sum():.3f}) | sig={nSig}(weighted:{WEIGHTS[LABELS==1].sum():.3f}) | nFeatures={nFeatures}")
+    print(f"nEvents={len(LABELS)} | bkg={nBkg}(weighted:{WEIGHTS[LABELS==0].sum():.3f}) | sig={nSig}(weighted:{WEIGHTS[LABELS==1].sum():.3f})")

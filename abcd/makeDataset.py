@@ -1,5 +1,10 @@
+"""
+Creates abcd/dataset/{signal}/{tag}_{train/valid}.pt, as well as .parqs in same dir.
+"""
+
 from TrainingTools import *
 import re, time, yaml, json, glob, warnings, uproot
+import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
@@ -117,7 +122,7 @@ def LoadEvents(paths, features, split_prefixes, label):
     # Giving sig/bkg label for training
     events["label"] = int(label)
 
-    return events
+    return events, list(samples) # samples indexed by proc_idx
 
 def log_transform(quantity):
     # NOTE: Negatives are rounded-m² artifacts, physically ~0. Clipping at 0 instead of -0.999
@@ -193,16 +198,29 @@ def makeDataLoaders(events, features, constraint, batch_size):
         use_sampler     = False,
         is_validation   = True
     )
-    return train_loader, valid_loader
+    return train_loader, valid_loader, train_idx, valid_idx
+
+def saveParquet(events, procNames, train_idx, valid_idx, constraint, path):
+    """ Rows ordered [train, valid] so they align with ConcatDataset(train.pt, valid.pt), letting the scan just assign ABCDscore. """
+    order = np.concatenate([train_idx, valid_idx])
+    labels = np.asarray(events.label)[order]
+    procs  = np.asarray(events.proc_idx)[order]
+    df = pd.DataFrame({
+        "VBSscore"     : np.asarray(events.rawVBS   , dtype=np.float32)[order],
+        "weight"       : np.asarray(events.rawWeight, dtype=np.float64)[order],
+        "norm_VBSscore": np.asarray(events[constraint], dtype=np.float32)[order], # min-max scaled; matches disco in the .pt
+        "norm_weight"  : np.asarray(events.weight   , dtype=np.float64)[order],   # class-normalized; sums to 1 per label
+        "label"   : labels.astype(np.int8),
+        "process" : [procNames[int(l)][p] for l, p in zip(labels, procs)], # proc_idx restarts at 0 per sig/bkg
+        "split"   : np.where(np.arange(len(order)) < len(train_idx), "train", "valid"),
+    })
+    df.to_parquet(path, index=False)
+    print(f"\033[1;32mSaved abcd/{path}!\033[0m")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(epilog="Ex) python main.py --config single/run2_2L_1FJ.yaml --flavor single")
+    parser = argparse.ArgumentParser(epilog="Ex) python makeDataset.py --config single/run2_2L_1FJ.yaml --flavor single")
     parser.add_argument('-c', "--config"    , required=True      , help="Path to YAML config")
     parser.add_argument('-f', "--flavor"    , default="single"   , choices=["single", "double"], help="Training flavor: single (one output) or double (two outputs). Later prob should put this in config.")
-    parser.add_argument('-d', "--data"      , action="store_true", help="Run inference data (without training) using the latest checkpoint from config")
-    parser.add_argument('-i', "--infer"     , action="store_true", help="Skip training and run inference only")
-    parser.add_argument('-p', "--checkpoint", default=None       , help="Path to model checkpoint (.ckpt) for inference. If omitted, auto-picks newest checkpoint.")
-    parser.add_argument('-o', "--output_csv", default=None       , help="Output CSV path")
     parser.add_argument('-s', "--signal"    , default="c2v1p5_c3_1p0", choices=["c2v1p0_c3_1p0", "c2v1p0_c3_10p0", "c2v1p5_c3_1p0"], help="Signal coupling point (c2v1p0_c3_1p0 is SM)")
     args = parser.parse_args()
 
@@ -220,8 +238,8 @@ if __name__ == "__main__":
     new_load_start = time.time()
     sig_paths = local_paths_from_json(cfg["sample_json"], cfg["local_base_path"], "sig", args.signal)
     bkg_paths = local_paths_from_json(cfg["sample_json"], cfg["local_base_path"], "bkg")
-    sig_events = LoadEvents(sig_paths, VarsToLoad, split_prefixes, 1)
-    bkg_events = LoadEvents(bkg_paths, VarsToLoad, split_prefixes, 0)
+    sig_events, sig_procs = LoadEvents(sig_paths, VarsToLoad, split_prefixes, 1)
+    bkg_events, bkg_procs = LoadEvents(bkg_paths, VarsToLoad, split_prefixes, 0)
     print(f"Loaded sig+bkg in {time.time()-new_load_start:.1f} s")
 
     # —————————— Preselection cut ———————————————————————————————————————————
@@ -233,6 +251,9 @@ if __name__ == "__main__":
     sig_percent = round(sum(sig_events.weight)/i_sigW*100, 1) ; bkg_percent = round(sum(bkg_events.weight)/i_bkgW*100, 1)
     print(f"\033[1mAfter preselection\033[0m : sig:{len(sig_events)} (weighted: {sum(sig_events.weight):.3f}, {sig_percent}% survived)  bkg:{len(bkg_events)} (weighted: {sum(bkg_events.weight):.3f}, {bkg_percent}% survived)")
 
+    for events in (sig_events, bkg_events): # kept for the ABCD scan, which needs real yields and uncscaled cut values
+        events["rawWeight"] = events.weight
+        events["rawVBS"]    = events[constraint]
     sig_events = normalize_weights(sig_events)
     bkg_events = normalize_weights(bkg_events)
 
@@ -243,7 +264,7 @@ if __name__ == "__main__":
     data = preprocess(data, TrainingFeatures, FeatureTransforms, constraint)
 
     # —————————— Make datasets ———————————————————————————————————————————
-    train_loader, valid_loader = makeDataLoaders(
+    train_loader, valid_loader, train_idx, valid_idx = makeDataLoaders(
         events     = data,
         features   = TrainingFeatures,
         constraint = constraint,
@@ -251,5 +272,8 @@ if __name__ == "__main__":
     )
     dataset_dir = f"{time.strftime('%y%m%d')}_dataset/{args.signal}"
     os.makedirs(dataset_dir, exist_ok=True)
-    torch.save(train_loader.dataset, f"{dataset_dir}/{Path(args.config).stem}_train.pt")
-    torch.save(valid_loader.dataset, f"{dataset_dir}/{Path(args.config).stem}_valid.pt")
+    for split, loader in (("train", train_loader), ("valid", valid_loader)):
+        datasetPath = f"{dataset_dir}/{Path(args.config).stem}_{split}.pt"
+        torch.save(loader.dataset, datasetPath)
+        print(f"\033[1;32mSaved abcd/{datasetPath}!\033[0m")
+    saveParquet(data, [bkg_procs, sig_procs], train_idx, valid_idx, constraint, f"{dataset_dir}/{Path(args.config).stem}.parq")
