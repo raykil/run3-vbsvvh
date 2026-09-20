@@ -679,7 +679,8 @@ def main():
         bkg_events = evaluate_preselection(bkg_events, cfg["preselection"])
     sig_percent = round(sum(sig_events.weight)/i_sigW*100, 1) ; bkg_percent = round(sum(bkg_events.weight)/i_bkgW*100, 1)
     print(f"\033[1mAfter preselection\033[0m : sig:{len(sig_events)} (weighted: {sum(sig_events.weight):.3f}, {sig_percent}% survived)  bkg:{len(bkg_events)} (weighted: {sum(bkg_events.weight):.3f}, {bkg_percent}% survived)")
-    
+    sys.exit()
+
     # Keep copies of the original data (with raw weights and features) for inference
     raw_sig_events = ak.copy(sig_events)
     raw_bkg_events = ak.copy(bkg_events)

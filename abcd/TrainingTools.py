@@ -1,4 +1,6 @@
+import os, argparse
 import numpy as np
+import awkward as ak
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -212,6 +214,34 @@ def chooseOverlaps():
                     "VHToNonbb_M125_TuneCP5_13TeV-amcatnloFXFX_madspin_pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM",
                     "VHToNonbb_M125_TuneCP5_13TeV-amcatnloFXFX_madspin_pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM"
                 ]
+            },
+            'ZH_HToBB': {
+                'A': [
+                    "ZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v1_NANOAODSIM",
+                    "ZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM",
+                    "ZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM",
+                    "ZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM"
+                ],
+                'B': [
+                    "ZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v1_NANOAODSIM",
+                    "ZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM",
+                    "ZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v2_NANOAODSIM",
+                    "ZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM"
+                ]
+            },
+            'ggZH_HToBB': {
+                'A': [
+                    "ggZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v2_NANOAODSIM",
+                    "ggZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM",
+                    "ggZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM",
+                    "ggZH_HToBB_ZToQQ_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM"
+                ],
+                'B': [
+                    "ggZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODAPVv15-150X_mcRun2_asymptotic_preVFP_v1-v1_NANOAODSIM",
+                    "ggZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL16NanoAODv15-150X_mcRun2_asymptotic_v1-v1_NANOAODSIM",
+                    "ggZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL17NanoAODv15-150X_mc2017_realistic_v1-v1_NANOAODSIM",
+                    "ggZH_HToBB_ZToBB_M-125_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv15-150X_mc2018_realistic_v1-v1_NANOAODSIM"
+                ]
             }
         },
         'run3': {
@@ -405,27 +435,121 @@ def chooseOverlaps():
     }
     CHOICES = {
         'run2': {
-            'DY_M-50': 'A',
-            'WToLNu': 'A',
-            'WW': 'A',
-            'WZ': 'A',
-            'ZZ': 'A',
-            'ttW': 'A',
-            'ttZ': 'A',
-            'ZH_HToWW': 'A'
+            'DY_M-50'   : 'B',  # B is HT binned, more stats (with B, HT<70 not covered, but neglegible)
+            'WToLNu'    : 'B',  # B is HT binned, more stats
+            'WW'        : 'B',  # B is exclusive in DM, more stats
+            'WZ'        : 'B',  # B is exclusive in DM, more stats
+            'ZZ'        : 'B',  # B is exclusive in DM, more stats
+            'ttW'       : 'B',  # A does not have 2016preVFP
+            'ttZ'       : 'A',  # B only covers LLNuNu (misses ZToQQ)
+            'ZH_HToWW'  : 'B',  # A is subset of B
+            'ZH_HToBB'  : 'A',  # USE A. Option B only considers ZToBB, which is a subset of ZToQQ.
+            'ggZH_HToBB': 'A'   # Same issue as in ZH_HToBB.
         },
         'run3': {
-            'DY_M-50': 'A',
-            'QCD': 'A',
-            'WToLNu': 'A',
-            'WW': 'A',
-            'WZ': 'A',
-            'ZZ': 'A',
-            'QCD_ZZTo4L': 'A',
-            'EWK_SSWW': 'A'
+            'DY_M-50'   : 'B',
+            'QCD'       : 'B',
+            'WToLNu'    : 'A',
+            'WW'        : 'B',
+            'WZ'        : 'B',
+            'ZZ'        : 'B',
+            'QCD_ZZTo4L': 'B',
+            'EWK_SSWW'  : 'B'
         }
     }
+    # Not handled in run2 (3 issues):
+    # 1) A: EWKZ2Jets_ZToLL   , B: ZZTo2Q2L + WZTo2Q2L
+    # 2) A: EWKZ2Jets_ZToNuNu , B: ZZTo2Nu2Q
+    # 3) A: EWKW+-2Jets_WToLNu, B: WWTo1L1Nu2Q + WZTo1L1Nu2Q
+    # Currently: As and Bs are both present, so double counting happens.
+    # Plan: Check after seeing event distribution, if they are big.
     return {sample for run, groups in OPTIONS.items() for group, opts in groups.items() for opt, samples in opts.items() if opt != CHOICES[run][group] for sample in samples}
+
+def makeLoaders(tag, signal):
+    def loader(split, shuffle):
+        dataset = torch.load(f"dataset/{signal}/{tag}_{split}.pt", weights_only=False)
+        return torch.utils.data.DataLoader(dataset, batch_size=4096, shuffle=shuffle, pin_memory=True, num_workers=4)
+    return loader("train", True), loader("valid", False)
+
+def makeModel(input_size):
+    model = ABCDModel(
+            input_size    = input_size,
+            hidden_layers = [64, 32, 16],
+            learning_rate = 0.001,
+            bce_weight    = 1.0,
+            disco_lambda  = 10.0,
+            flavor        = 'single',
+            use_batchnorm = True,
+            dropout       = 0.2,
+            weight_decay  = 0.01,
+            label_smoothing = 0.0,
+            use_lr_scheduler  = True, # LR = Learning Rate
+            lr_scheduler_patience = 5,
+            lr_scheduler_factor = 0.5,
+            lr_scheduler_min_lr = 1e-6,
+        )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # uses GPU
+    model.to(device)
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=model.learning_rate,
+        weight_decay=model.weight_decay,
+    )
+
+    scheduler = None
+    if model.use_lr_scheduler:
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            factor=model.lr_scheduler_factor,
+            patience=model.lr_scheduler_patience,
+            min_lr=model.lr_scheduler_min_lr,
+        )
+    return model, optimizer, scheduler, device
+
+def doTraining(model, train_loader, valid_loader, optimizer, scheduler, device, best_model_path,
+               max_epochs=100, early_stopping_patience=20):
+
+    def epoch_loss(loader, training):
+        model.train(training)
+        total = 0.0
+        with torch.set_grad_enabled(training):
+            for batch in loader:
+                loss, bce, disco, _ = model.compute_loss(tuple(x.to(device) for x in batch))
+                if training:
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+                total += loss.item()
+        return total / len(loader)
+
+    best_val_loss = float("inf")
+    epochs_since_best = 0
+    for epoch in range(max_epochs):
+        train_loss = epoch_loss(train_loader, True)
+        val_loss = epoch_loss(valid_loader, False)
+        result_str = f"Epoch {epoch}: train={train_loss:.4f}, val={val_loss:.4f}"
+
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            epochs_since_best = 0
+            torch.save(model.state_dict(), best_model_path)
+            result_str += f"  \033[1;32mSaved best model to {best_model_path}\033[0m"
+        else:
+            epochs_since_best += 1
+
+        if scheduler is not None:
+            scheduler.step(val_loss)
+
+        stop = epochs_since_best >= early_stopping_patience
+        if stop:
+            result_str += f"\n\033[1;32mNo improvement for {early_stopping_patience} epochs, stopping at epoch {epoch}. Best val={best_val_loss:.4f}\033[0m"
+
+        print(result_str)
+        if stop: break
+    return best_val_loss
 
 class ABCDDataSet(Dataset):
     def __init__(self, data, constraint_data, labels, weights):

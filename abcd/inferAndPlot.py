@@ -250,7 +250,7 @@ def main():
 
     base = Path(__file__).resolve().parent
     tag = f"run{args.run}_2L_{args.nFJ}FJ"
-    plot_dir = base / "plots" / tag
+    plot_dir = base / "plots" / args.signal / tag
     plot_dir.mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -273,7 +273,7 @@ def main():
         lr_scheduler_factor=0.5,
         lr_scheduler_min_lr=1e-6,
     )
-    model.load_state_dict(torch.load(base / "models" / f"{tag}_best_model.pt", map_location="cpu"))
+    model.load_state_dict(torch.load(base / "models" / args.signal / f"{tag}_best_model.pt", map_location="cpu"))
 
     plot_validation_roc(
         model,
