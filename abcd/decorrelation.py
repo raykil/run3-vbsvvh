@@ -131,19 +131,7 @@ if __name__=="__main__":
     model.eval() # switch from train mode to eval mode. Dropout stops dropping neurons, and batch-norm uses stored running stats.
 
     # —————————— Evaluate ABCDNet Score ——————————————————————————————————————————————————
-    SCORES, LABELS, WEIGHTS, DISCOS = [], [], [], []
-    torch.set_grad_enabled(False)
-    for features, disco, labels, weights in validation_loader: # Loops over batches. nIteration = nEvents / batch_size
-        ABCDNetScore = model(features.to(device)) # This is where ABCDNet Score is assigned.
-        ABCDNetScore = torch.sigmoid(ABCDNetScore).cpu()
-        SCORES.append(ABCDNetScore)
-        DISCOS.append(disco)
-        LABELS.append(labels)
-        WEIGHTS.append(weights)
-    SCORES  = torch.cat(SCORES).reshape(-1).numpy() # ABCDNet Scores. [0, 1] avg: 0.315
-    DISCOS  = torch.cat(DISCOS).reshape(-1).numpy() # vbs_score. [0, 1] avg: 0.237
-    LABELS  = torch.cat(LABELS).reshape(-1).numpy()
-    WEIGHTS = torch.cat(WEIGHTS).reshape(-1).numpy() # O(w) ~ [1e-10, 1e-2]
+    SCORES, DISCOS, LABELS, WEIGHTS = evalABCDscore(model, validation_loader)
 
     # —————————— Plotting ——————————————————————————————————————————————————
     makeScoreDensity, makeVBS_vs_ABCD, makeDiscoHist = (flag == '1' for flag in args.make)
@@ -159,3 +147,4 @@ if __name__=="__main__":
     if makeScoreDensity: plotScoreDensity(SCORES, LABELS, WEIGHTS)
     if makeVBS_vs_ABCD : plotVBS_vs_ABCD(SCORES, DISCOS, LABELS, WEIGHTS)
     if makeDiscoHist   : plotDiscoHist(SCORES, DISCOS, LABELS, WEIGHTS)
+    # TODO: Make ROC curve. Use from sklearn.metrics import auc, roc_curve

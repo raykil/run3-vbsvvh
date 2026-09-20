@@ -8,7 +8,7 @@ training_features: # tag higgs jet first, higher Hbb score is Higgs jet
   - lepton_pt: log
   - lepton_eta: minmax
   - lepton_phi: minmax
-  - lepton_mass: log
+  - lepton_mass: log # may be almost useless since it basically distinguishes electrons and muons, and sig vs bkg have similar flavor composition, so this doesn't give useful info in training.
   - met_pt: log
   - met_phi: minmax
   - fatjet_pt: log

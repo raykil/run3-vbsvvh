@@ -465,6 +465,22 @@ def chooseOverlaps():
     # Plan: Check after seeing event distribution, if they are big.
     return {sample for run, groups in OPTIONS.items() for group, opts in groups.items() for opt, samples in opts.items() if opt != CHOICES[run][group] for sample in samples}
 
+@torch.no_grad()
+def evalABCDscore(model, loader):
+    """ Returns SCORES [0,1] avg 0.315, DISCOS (vbs_score) [0,1] avg 0.237, LABELS, WEIGHTS O[1e-10, 1e-2]. """
+    device = next(model.parameters()).device
+    SCORES, DISCOS, LABELS, WEIGHTS = [], [], [], []
+    for features, disco, labels, weights in loader: # Loops over batches. nIteration = nEvents / batch_size
+        SCORES.append(torch.sigmoid(model(features.to(device))).cpu()) # This is where ABCDNet Score is assigned.
+        DISCOS.append(disco)
+        LABELS.append(labels)
+        WEIGHTS.append(weights)
+    SCORES  = torch.cat(SCORES).reshape(-1).numpy()
+    DISCOS  = torch.cat(DISCOS).reshape(-1).numpy()
+    LABELS  = torch.cat(LABELS).reshape(-1).numpy()
+    WEIGHTS = torch.cat(WEIGHTS).reshape(-1).numpy()
+    return SCORES, DISCOS, LABELS, WEIGHTS
+
 def makeLoaders(tag, signal):
     def loader(split, shuffle):
         dataset = torch.load(f"dataset/{signal}/{tag}_{split}.pt", weights_only=False)
