@@ -6,6 +6,8 @@ from TrainingTools import *
 import re, time, yaml, json, glob, warnings, uproot
 import pandas as pd
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from functions import chooseOverlaps
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 warnings.filterwarnings("ignore", message=".*reduce_op.*")
@@ -86,6 +88,25 @@ def evaluate_preselection(events, expression):
     cut = eval(expression, {"__builtins__": {}, "np": np, "ak": ak}, {f: events[f] for f in events.fields})
     return events[cut]
 
+VBF_BRANCHES = ["vbs_detajj", "vbs_mjj", "vbs_jet1_idx", "vbs_jet2_idx", "jet_pt", "jet_eta", "jet_jetId"]
+def VBFCut(events, features):
+    # Same as isVBF in VBSVVH/01_processing/utils/CategorizerTools.py:setVBFJets: deta > 2.5, mjj > 750, and both BDT-tagged VBS jets pass SelectGoodAK4Jets
+    goodJet = (events.jet_pt > 30) & (events.jet_jetId > 2) & (abs(events.jet_eta) < 5.0) & ~((events.jet_pt <= 50) & (abs(events.jet_eta) > 2.5) & (abs(events.jet_eta) < 3.0))
+    jetIdx  = ak.local_index(events.jet_pt, axis=1) # vbs_jet*_idx index the jet collection; -1 (no pair) matches nothing
+    goodVBS = ak.sum(goodJet & ((jetIdx == events.vbs_jet1_idx) | (jetIdx == events.vbs_jet2_idx)), axis=1) == 2
+    events  = events[(events.vbs_detajj > 2.5) & (events.vbs_mjj > 750) & goodVBS]
+    return events[[f for f in events.fields if f not in VBF_BRANCHES or f in features]] # drop the extra branches, incl. jagged jets the flattening can't take
+
+LEPTON_ID_BRANCHES = ["electron_pt", "muon_pt", "electron_cutBased"]
+def LooseLeptons(arr, lep):
+    # In preselection, 2lep selection counts Loose leptons (veto for muon). So it's possible that third veto electron enter events in RDF.
+    # When selecting leadlep and subleadlep in makeDataset, if that veto e has enough pT, it can enter field[:,0] or field[:,1].
+    # Thus, I am making electron-level cut to drop any veto electrons.
+    # lepton_* = pT-sorted veto electrons + loose muons; keep only the loose ones nLep_Sel counts (mirrors LeptonSelections in selections.cpp)
+    isLoose = ak.concatenate([lep.electron_cutBased >= 2, lep.muon_pt > 0], axis=1)[ak.argsort(ak.concatenate([lep.electron_pt, lep.muon_pt], axis=1), ascending=False)]
+    for field in [f for f in arr.fields if f.startswith("lepton_")]: arr[field] = arr[field][isLoose]
+    return arr
+
 def local_paths_from_json(jsonpath, base_path, kind='sig', signal="c2v1p5_c3_1p0"):
     with open(jsonpath, 'r') as f: samples = json.load(f)["samples"]
     names = [name for name, s in samples.items() if s["metadata"]["kind"] == kind and (kind != "sig" or s["metadata"]["shortname"].endswith(signal))]
@@ -94,12 +115,14 @@ def local_paths_from_json(jsonpath, base_path, kind='sig', signal="c2v1p5_c3_1p0
 
 def LoadEvents(paths, features, split_prefixes, label):
     """Trying to migrate to awkward array"""
-    # Adding idxs
     rejected = chooseOverlaps()
     paths = sorted((p for p in paths if Path(p).parent.name not in rejected), key=lambda p: Path(p).parent.name)
+    passFlag = f"passes_2lep_{2 if 'fatjet_' in split_prefixes else 1}FJ_nom"
     arrays, samples = [], {}
     for file_idx, path in enumerate(paths):
-        arr = uproot.open(f"{path}:Events").arrays(features, library="ak")
+        tree = uproot.open(f"{path}:Events")
+        arr = tree.arrays(features + [passFlag], library="ak") # arr = uproot.open(f"{path}:Events").arrays(list(dict.fromkeys(features + [passFlag] + VBF_BRANCHES)), library="ak") # with VBFCut below
+        arr = LooseLeptons(arr, tree.arrays(LEPTON_ID_BRANCHES, library="ak"))
         arr["file_idx"] = file_idx
         arr["proc_idx"] = samples.setdefault(Path(path).parent.name, len(samples)) # increments per sample (e.g. DY=0, ttbar=1)
         arrays.append(arr)
@@ -107,8 +130,10 @@ def LoadEvents(paths, features, split_prefixes, label):
 
     # Additional cutflow (before flatten/split, which assume the channel's fatjet count)
     events = events[events.weight>0]
-    events = events[ak.num(events.fatjet_pt) == (2 if "fatjet_" in split_prefixes else 1)] # TEMP: drop JES/JER-variation leaks from preselection (nominal fatjet count != channel's)
-    events = events[events.vbs_score != -999] # TEMP: -999 means nominal njet < 2; mirrors the njet >= 2 cut now in selections.cpp
+    # events = events[ak.num(events.fatjet_pt) == (2 if "fatjet_" in split_prefixes else 1)] # TEMP: drop JES/JER-variation leaks from preselection (nominal fatjet count != channel's)
+    # events = events[events.vbs_score != -999] # TEMP: -999 means nominal njet < 2; mirrors the njet >= 2 cut now in selections.cpp
+    events = events[events[passFlag]] # nominal channel cut; preselection keeps events passing under ANY JES/JER variation
+    # events = VBFCut(events, features)
 
     # Handling split_prefixes
     for field in events.fields:
@@ -133,26 +158,23 @@ def minmax_transform(quantity):
     scaler = MinMaxScaler(feature_range=(0,1))
     quantity = np.asarray(quantity).reshape(-1,1)
     quantity = scaler.fit_transform(quantity).ravel()
-    return quantity
+    return quantity, float(scaler.data_min_[0]), float(scaler.data_max_[0])
 
 def preprocess(events, features, transforms, constraint):
     features = [f for f in features if f in events.fields]
     if constraint not in features: transforms[constraint] = 'minmax'
     features += [constraint]
 
+    scaling = {}
     for feature in features:
         quantity = events[feature]
         if transforms[feature] == "log":
             quantity = log_transform(quantity)
-            quantity = minmax_transform(quantity)
-        elif transforms[feature] == "minmax":
-            quantity = minmax_transform(quantity)
-        else:
-            # NOTE: Transform: None also does minmax
-            quantity = minmax_transform(quantity)
-        events[feature] = quantity
+        # NOTE: Every transform, incl. none, ends in minmax
+        events[feature], lo, hi = minmax_transform(quantity)
+        scaling[feature] = {"transform": transforms[feature], "min": lo, "max": hi}
 
-    return events
+    return events, scaling
 
 def normalize_weights(events):
     events["weight"] = events.weight / sum(events.weight)
@@ -261,7 +283,8 @@ if __name__ == "__main__":
     data = ak.concatenate([sig_events, bkg_events])
     data = apply_derived_vars(data, derived_vars_cfg)
     TrainingFeatures = split_features(TrainingFeatures, split_prefixes)
-    data = preprocess(data, TrainingFeatures, FeatureTransforms, constraint)
+    data, scaling = preprocess(data, TrainingFeatures, FeatureTransforms, constraint)
+    inputs = {f: scaling[f] for f in TrainingFeatures} # DNN input columns in order; doTraining bundles it into the model checkpoint
 
     # —————————— Make datasets ———————————————————————————————————————————
     train_loader, valid_loader, train_idx, valid_idx = makeDataLoaders(
@@ -274,6 +297,7 @@ if __name__ == "__main__":
     os.makedirs(dataset_dir, exist_ok=True)
     for split, loader in (("train", train_loader), ("valid", valid_loader)):
         datasetPath = f"{dataset_dir}/{Path(args.config).stem}_{split}.pt"
+        loader.dataset.inputs = inputs
         torch.save(loader.dataset, datasetPath)
         print(f"\033[1;32mSaved abcd/{datasetPath}!\033[0m")
     saveParquet(data, [bkg_procs, sig_procs], train_idx, valid_idx, constraint, f"{dataset_dir}/{Path(args.config).stem}.parq")
